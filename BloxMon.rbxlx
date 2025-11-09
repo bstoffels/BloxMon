@@ -1723,6 +1723,281 @@ return TypeChart]]></ProtectedString>
 				<UniqueId name="UniqueId">291759ad7f658b960922381a000006ca</UniqueId>
 			</Properties>
 		</Item>
+		<Item class="ModuleScript" referent="RBX2FE1E0E91AC94855BD3B0F5FC7D667E0">
+			<Properties>
+				<Content name="LinkedSource"><null></null></Content>
+				<ProtectedString name="Source"><![CDATA[-- CreatureModule (In ServerStorage)
+-- Defines the blueprint for all creatures and calculates their actual stats based on level.
+
+local CreatureModule = {}
+
+-- [[ 1. Static Data: The Blueprint (The "Pokedex" Data) ]]
+CreatureModule.BASE_DATA = {
+	-- ID 1001: Example Starter Creature
+	[1] = {
+		Name = "Scaldar",
+		Type = {"Fire"}, -- Creatures can have one or two types
+		BaseStats = {HP = 40, Attack = 30, Defense = 20, SpAtk = 50, SpDef = 30, Speed = 60},
+		Evolutions = {TargetID = 2, Method = "Level", Condition = 16},
+		LevelUpMoves = {
+			[1] = {"Round"},
+			[5] = {"Ember"},
+		},
+		TutorMoves = {
+			"",
+			"",
+		}
+	},
+
+	-- ID 1002: Example Ground Creature
+	[2] = {
+		Name = "Wyrmfire",
+		Type = {"Fire"},
+		BaseStats = {HP = 70, Attack = 40, Defense = 30, SpAtk = 80, SpDef = 50, Speed = 80},
+		Evolutions = {TargetID = 3, Method = "Level", Condition = 32},
+		BaseMoves = {},
+		LevelUpMoves = {
+			[16] = {"Flamethrower"},
+		},
+		TutorMoves = {
+			"",
+			"",
+		}
+	},
+	[3] = {
+		Name = "Draconiax",
+		Type = {"Fire"},
+		BaseStats = {HP =90, Attack = 60, Defense = 30, SpAtk = 100, SpDef = 70, Speed = 100},
+		Evolutions = nil,
+		LevelUpMoves = {
+			[5] = {"Tackle"},
+		},
+		TutorMoves = {
+			"",
+			"",
+		}
+	},
+}
+
+-- [[ 2. The Stat Calculation Function ]]
+
+--- Calculates a creature's stats based on its Base Stats and Level.
+function CreatureModule:CalculateStats(baseStats: table, level: number): table
+	local calculatedStats = {}
+
+	-- The common RPG/Creature formula ensures creatures scale predictably.
+	-- HP Calculation (usually unique)
+	calculatedStats.HP = math.floor( (2 * baseStats.HP * level) / 100 + level + 10 )
+
+	-- Other Stats (Attack, Defense, etc.) Calculation
+	for statName, baseValue in pairs(baseStats) do
+		if statName ~= "HP" then
+			calculatedStats[statName] = math.floor( (2 * baseValue * level) / 100 + 5 )
+		end
+	end
+
+	return calculatedStats
+end
+
+-- [[ 3. The Constructor Function (The "Instance" Creator) ]]
+
+local CreatureInstance = {}
+CreatureInstance.__index = CreatureInstance
+
+--- Creates a new, active creature object (an instance) for use in battle or player inventory.
+function CreatureModule.new(creatureID: number, level: number): table
+	local baseData = CreatureModule.BASE_DATA[creatureID]
+
+	if not baseData then
+		warn("Creature ID", creatureID, "not found!")
+		return {} 
+	end
+
+	local self = setmetatable({}, CreatureInstance)
+
+	-- Static properties inherited from the blueprint
+	self.ID = creatureID
+	self.Name = baseData.Name
+	self.Type = baseData.Type
+
+	-- Dynamic properties unique to this instance
+	self.Level = level
+	self.EXP = 0
+	self.CurrentStats = CreatureModule:CalculateStats(baseData.BaseStats, self.Level)
+	self.CurrentHP = self.CurrentStats.HP 
+	self.Moves = {} -- To be loaded from a separate MoveModule/Data
+
+	return self
+end
+
+return CreatureModule]]></ProtectedString>
+				<string name="ScriptGuid">{446B2BF1-D6CC-468D-BA9B-234C7E334CE5}</string>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+				<string name="Name">CreatureModule</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<UniqueId name="UniqueId">291759ad7f658b960922381a000006d4</UniqueId>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBXE2E21C1968CC4F8E81BE37565402C95D">
+			<Properties>
+				<Content name="LinkedSource"><null></null></Content>
+				<ProtectedString name="Source"><![CDATA[-- MoveModule (In ServerStorage)
+-- Defines the static properties for every attack in the game.
+
+local MoveModule = {}
+
+-- [[ Static Data: The Blueprint for all Attacks ]]
+MoveModule.MOVE_DATA = {
+	["Tackle"] = {
+		ID = 1,
+		Name = "Tackle",
+		Type = "Normal",      -- Used for Type Effectiveness and STAB
+		Category = "Physical",  -- Affects whether Attack/Defense or SpAtk/SpDef is used
+		Power = 40,           -- Base power used in the damage formula
+		Accuracy = 100,       -- Hit chance percentage (1 to 100)
+		PP = 35,              -- Uses per creature
+		Effect = nil,         -- Special effects (e.g., flinching, lowering stat)
+	},
+	["Round"] = {
+		ID = 2,
+		Name = "Round",
+		Type = "Normal",
+		Category = "Special",
+		Power = 40,
+		Accuracy = 100,
+		PP = 35,
+		Effect = nil,
+	},
+	["Ember"] = {
+		ID = 3,
+		Name = "Ember",
+		Type = "Fire",
+		Category = "Special",
+		Power = 40,
+		Accuracy = 100,
+		PP = 25,
+		Effect = nil,
+	},
+	["Flamethrower"] = {
+		ID = 4,
+		Name = "Flamethrower",
+		Type = "Fire",
+		Category = "Special",
+		Power = 90,
+		Accuracy = 100,
+		PP = 15,
+		Effect = "BurnChance", -- Special effect: 10% chance to Burn
+	},
+}
+
+--- Retrieves the static data for a given move name.
+function MoveModule.getMoveData(moveName: string): table
+	return MoveModule.MOVE_DATA[moveName]
+end
+
+return MoveModule]]></ProtectedString>
+				<string name="ScriptGuid">{495C30A0-0297-471C-9D23-F42A2D6C146E}</string>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+				<string name="Name">MoveModule</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<UniqueId name="UniqueId">291759ad7f658b960922381a000006d7</UniqueId>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBX7DF64F07706E49DB8E775CCD4C674F83">
+			<Properties>
+				<Content name="LinkedSource"><null></null></Content>
+				<ProtectedString name="Source"><![CDATA[-- CombatModule (In ServerStorage)
+-- The central hub for all battle logic, ensuring calculations are server-authoritative.
+
+local CombatModule = {}
+
+-- [[ 1. Module Dependencies ]]
+-- The CombatModule requires access to all secure data modules.
+local TypeChartModule = require(game.ServerStorage.TypeChartModule)
+local CreatureModule = require(game.ServerStorage.CreatureModule)
+local MoveModule = require(game.ServerStorage.MoveModule)
+
+-- [[ 2. The Server-Authoritative Damage Calculation ]]
+
+--- Calculates the final damage dealt by an attacker to a defender.
+-- NOTE: This function only runs when called by the server.
+function CombatModule.CalculateDamage(attackerInstance: table, defenderInstance: table, moveName: string): number
+
+	-- 2A. Retrieve Secure Move Data
+	-- [Why Server?] Ensures the client can't lie about the move's Power or Type.
+	local moveData = MoveModule.getMoveData(moveName)
+	if not moveData then return 0 end -- Safety check
+
+	-- 2B. Determine Stats based on Move Category (Physical, Special)
+	local attackStatKey = (moveData.Category == "Physical") and "Attack" or "SpAtk"
+	local defenseStatKey = (moveData.Category == "Physical") and "Defense" or "SpDef"
+
+	local attackStat = attackerInstance.CurrentStats[attackStatKey]
+	local defenseStat = defenderInstance.CurrentStats[defenseStatKey]
+
+	-- 2C. Base Formula Calculation (Uses the standard creature formula)
+	local damage = (
+		( (2 * attackerInstance.Level / 5 + 2) * moveData.Power * (attackStat / defenseStat) / 50 )
+	) + 2
+
+	-- 2D. Apply Modifiers (The Heart of the Calculation)
+	local totalMultiplier = 1
+
+	-- TYPE EFFECTIVENESS
+	-- [Why Server?] Uses the secure data from TypeChartModule, which clients cannot access.
+	local typeEffectiveness = TypeChartModule.getMultiplier(moveData.Type, defenderInstance.Type[1])
+	totalMultiplier *= typeEffectiveness
+
+	-- STAB (Same-Type Attack Bonus): 1.5x if the move type matches one of the attacker's types
+	-- [Why Server?] Prevents client from claiming 1.5x bonus when it's not applicable.
+	for _, type in ipairs(attackerInstance.Type) do
+		if type == moveData.Type then
+			totalMultiplier *= 1.5
+			break
+		end
+	end
+
+	-- Critical Hit Logic (e.g., 6.25% chance)
+	-- [Why Server?] Prevents client from forcing a critical hit.
+
+	damage = math.floor(damage * totalMultiplier)
+
+	return math.max(1, damage) -- Damage is at least 1, unless type effectiveness is 0.
+end
+
+-- [[ 3. The Server-Authoritative Battle Processor ]]
+
+--- Receives the client's command and processes the battle turn.
+-- This function is called by a RemoteEvent listener (which we will set up next).
+function CombatModule.ProcessBattleTurn(player, creatureInstanceID: string, moveName: string)
+	-- 1. SECURITY CHECK: Authenticate player and ownership.
+	-- 2. GET DATA: Retrieve active creature instance data from the ServerDataCache.
+	-- 3. EXECUTE: Call CombatModule.CalculateDamage(...)
+	-- 4. APPLY STATE: Update defender's HP and check for faints.
+	-- 5. NOTIFY CLIENTS: Send the result (damage dealt, type effectiveness) back to the clients for display.
+	print(player.Name .. " is attempting to use " .. moveName .. ".")
+end
+
+return CombatModule]]></ProtectedString>
+				<string name="ScriptGuid">{27534606-2264-4059-BE4F-1BDC1ACE1363}</string>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+				<string name="Name">CombatModule</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<UniqueId name="UniqueId">291759ad7f658b960922381a000006da</UniqueId>
+			</Properties>
+		</Item>
 	</Item>
 	<Item class="ServiceVisibilityService" referent="RBX04B52AC071894B8682961585598570BA">
 		<Properties>
