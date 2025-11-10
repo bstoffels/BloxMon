@@ -1585,36 +1585,44 @@ AbilityData.ABILITY_DATA = {
 	["PyrePower"] = {
 		ID = 1,
 		Name = "Pyre Power",
-		Trigger = "OnAttackExecuted",
+		Trigger = {"OnAttackExecuted"},
 		Scope = "UserOnly",
 		Description = "Increases the power of Fire-type moves by 20%.",
-		Effect = {"BoostTypeDamage", "Fire", 1.20}, -- [Action, Type, Multiplier]
+		Effect = {
+			{"BoostTypeDamage", "Fire", 1.20}, -- [Action, Type, Multiplier]
+		},
 	},
-
 	["MoltenScales"] = {
 		ID = 2,
 		Name = "Molten Scales",
-		Trigger = "OnPhysicalDamageTaken",
+		Trigger = {"OnPhysicalDamageTaken"},
 		Scope = "OpponentOnly",
 		Description = "When hit by a Physical move, the attacker takes recoil and may be Burned.",
-		Effect = {"RecoilDamage", 0.125, "BurnChance", 0.10}, -- [Action, Value, Status, Chance]
+		Effect = {
+			{"RecoilDamage", 0.125}, -- [Action, Value]
+			{"GiveStatus", "Burn", 0.10}, -- [Action, Status, Chance]
+		},
 	},
-
 	["DragonSurge"] = {
 		ID = 3,
 		Name = "Dragon Surge",
-		Trigger = "OnEntry",
+		Trigger = {"OnEntry"},
 		Scope = "UserOnly",
 		Description = "Boosts the user's Speed stat by one stage upon entering battle.",
-		Effect = {"StatChange", "Speed", 1}, -- [Action, Stat, Stages]
+		Effect = {
+			{"StatChange", "Speed", 1}, -- [Action, Stat, Stages]
+		},
 	},
 	["WyrmResonance"] = {
 		ID = 4,
 		Name = "Wyrm Resonance",
-		Trigger = "OnMoveUsedGlobal",
+		Trigger = {"OnMoveUsedGlobal", "DragonDance"},
 		Scope = "UserOnly",
 		Description = "Gains a small boost to Attack and Sp. Attack when any creature uses Dragon Dance.",
-		Effect = {"StatChangeGlobal", "DragonDance", "Attack", 0.5, "SpAtk", 0.5}, -- 0.5 stages (small boost)
+		Effect = {
+			{"StatChange", "Attack", 0.5}, -- [Action, Stat, Stages]
+			{"StatChange", "SpAtk", 0.5}, -- [Action, Stat, Stages]
+		},
 	},
 }
 
@@ -2052,15 +2060,131 @@ return MoveModule]]></ProtectedString>
 			<Item class="ModuleScript" referent="RBX4B2AEEC2F8624AD9A2660D5D1D71D36D">
 				<Properties>
 					<Content name="LinkedSource"><null></null></Content>
-					<ProtectedString name="Source"><![CDATA[-- AbilityModule (In ServerStorage)
--- Defines the secure static properties for all creature abilities.
-local AbilityData = require(script.Parent.Parent.Data.AbilityData)
+					<ProtectedString name="Source"><![CDATA[-- File: ServerStorage/Modules/AbilityModule.lua
+
+local ServerStorage = script.Parent.Parent
+-- Assuming CreatureData and MoveData are also in the Data folder
+local AbilityData = require(ServerStorage.Data.AbilityData)
+local MoveData = require(ServerStorage.Data.MoveData) -- Needed to check move properties
+
 local AbilityModule = {}
 AbilityModule.ABILITY_DATA = AbilityData.ABILITY_DATA
 
---- Retrieves the static data for a given ability name.
+-- Helper function that executes a list of effects on a target
+local function executeEffects(targetCreature: table, effectList: table)
+	for _, effectAction in ipairs(effectList) do
+		local actionType = effectAction[1] -- e.g., "StatChange", "RecoilDamage"
+
+		if actionType == "StatChange" then
+			-- [Action, Stat, Stages] -> ["StatChange", "Speed", 1]
+			local statName = effectAction[2]
+			local stages = effectAction[3]
+
+			-- PSEUDO-CODE: Implement this in your creature instance class
+			targetCreature:ApplyStatBoost(statName, stages)
+			print(targetCreature.Name .. " stat changed: " .. statName .. " by " .. stages .. " stages.")
+
+		elseif actionType == "RecoilDamage" then
+			-- [Action, Value] -> ["RecoilDamage", 0.125]
+			local multiplier = effectAction[2]
+			local damageToDeal = targetCreature.LastDamageTaken * multiplier -- Assumes instance stores last hit damage
+
+			-- PSEUDO-CODE: Implement this in your battle system
+			targetCreature:DealRecoilDamage(damageToDeal)
+			print(targetCreature.Name .. " took recoil damage.")
+
+		elseif actionType == "GiveStatus" then
+			-- [Action, Status, Chance] -> ["GiveStatus", "Burn", 0.10]
+			local status = effectAction[2]
+			local chance = effectAction[3]
+
+			if math.random() <= chance then
+				-- PSEUDO-CODE: Implement this in your battle system
+				targetCreature:ApplyStatusEffect(status)
+				print(targetCreature.Name .. " applied status: " .. status)
+			end
+		end
+		-- Add logic for BoostTypeDamage, etc., here...
+	end
+end
+
+-- --- PUBLIC FUNCTIONS ---
+
+-- Retrieves the static data for a given ability name.
 function AbilityModule.getAbilityData(abilityName: string): table
 	return AbilityModule.ABILITY_DATA[abilityName]
+end
+
+-- 1. On Entry Handler (for Dragon Surge)
+-- Called by the battle system when any creature enters the field.
+function AbilityModule.handleOnEntry(user: table)
+	local abilityName = user.ActiveAbility or user.HiddenAbility
+	if not abilityName then return end
+
+	local abilityData = AbilityModule.getAbilityData(abilityName)
+
+	if abilityData and abilityData.Trigger and table.find(abilityData.Trigger, "OnEntry") then
+		executeEffects(user, abilityData.Effect)
+	end
+end
+
+-- 2. Pre-Damage Calculation Handler (for Pyre Power)
+-- Called by the battle system before applying damage, used to modify the final power/multiplier.
+function AbilityModule.calculateDamageMultiplier(user: table, move: table): number
+	local multiplier = 1.0
+	local abilityName = user.ActiveAbility -- Only checking active ability here
+	if not abilityName then return multiplier end
+
+	local abilityData = AbilityModule.getAbilityData(abilityName)
+
+	if abilityData and table.find(abilityData.Trigger, "OnAttackExecuted") then
+		for _, effectAction in ipairs(abilityData.Effect) do
+			if effectAction[1] == "BoostTypeDamage" and effectAction[2] == move.Type then
+				-- [Action, Type, Multiplier] -> ["BoostTypeDamage", "Fire", 1.20]
+				multiplier = multiplier * effectAction[3]
+			end
+		end
+	end
+
+	return multiplier
+end
+
+-- 3. Post-Damage Handler (for Molten Scales)
+-- Called by the battle system AFTER a physical hit is confirmed.
+function AbilityModule.handleOnHit(attacker: table, victim: table, moveCategory: string)
+	if moveCategory ~= "Physical" then return end -- Molten Scales only triggers on Physical moves
+
+	local abilityName = victim.ActiveAbility -- Check the victim's ability
+	if not abilityName then return end
+
+	local abilityData = AbilityModule.getAbilityData(abilityName)
+
+	if abilityData and table.find(abilityData.Trigger, "OnPhysicalDamageTaken") then
+		-- Execute the effects, applying them to the ATTACKER (as they are recoil/status)
+		executeEffects(attacker, abilityData.Effect) 
+	end
+end
+
+-- 4. Global Move Used Handler (for Wyrm Resonance)
+-- Called by the battle system every time *any* creature uses a move.
+function AbilityModule.handleOnMoveUsed(moveUser: table, moveName: string, activeCreaturesInBattle)
+	for _, creature in ipairs(activeCreaturesInBattle) do
+		local abilityName = creature.ActiveAbility or creature.HiddenAbility
+		if not abilityName then continue end
+
+		local abilityData = AbilityModule.getAbilityData(abilityName)
+
+		if abilityData and table.find(abilityData.Trigger, "OnMoveUsedGlobal") then
+			local conditionMove = abilityData.Trigger[2]
+
+			-- Check the specific condition: does the used move match the required move?
+			if conditionMove and moveName == conditionMove then
+
+				-- Execute the Wyrm Resonance effects on the creature (self-boost)
+				executeEffects(creature, abilityData.Effect)
+			end
+		end
+	end
 end
 
 return AbilityModule]]></ProtectedString>
