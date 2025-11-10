@@ -1499,10 +1499,309 @@ zNLfaoZA///+//PAj5CH]]></BinaryString>
 			<BinaryString name="Tags"></BinaryString>
 			<UniqueId name="UniqueId">291759ad7f658b960922381a00000378</UniqueId>
 		</Properties>
-		<Item class="ModuleScript" referent="RBXE1861669032E4D6E9F61A96D9FA47039">
+		<Item class="Folder" referent="RBX466DD2689C444312A0ADDC5680AD0294">
 			<Properties>
-				<Content name="LinkedSource"><null></null></Content>
-				<ProtectedString name="Source"><![CDATA[-- TypeChartModule
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+				<string name="Name">Data</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<UniqueId name="UniqueId">5340f2d868e258eb0923412b000006f7</UniqueId>
+			</Properties>
+			<Item class="ModuleScript" referent="RBXC0F9E81692BF44EC9F16AE87FD305F07">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[-- CreatureData Module
+-- Contains the static blueprint data for all creatures.
+local CreatureData = {}
+
+CreatureData.BASE_DATA = {
+	[1] = {
+		Name = "Scaldar",
+		Type = {"Fire"},
+		BaseStats = {HP = 40, Attack = 30, Defense = 20, SpAtk = 50, SpDef = 30, Speed = 60},
+		Evolutions = {TargetID = 2, Method = "Level", Condition = 16},
+		Ability = {"PyrePower"},
+		HiddenAbility = nil,
+		BaseMoves = {},
+		LevelUpMoves = {
+			[1] = {"Round"}, [5] = {"Ember"}, [10] = {"Roar"}, [15] = {"DragonBreath"},
+		},
+		TutorMoves = {"", ""},
+		Description = "Scaldar is a cheerful, newly-hatched dragon whose tiny scales shimmer like glowing embers. Its basic fire power is still weak, allowing it only to spit out small sparks. It compensates with unexpected speed, nimbly running around to find its favorite warm and sunny spots. The small, stable flame on its tail serves as a gauge of its health.",
+	},
+	[2] = {
+		Name = "Wyrmfire",
+		Type = {"Fire"},
+		BaseStats = {HP = 70, Attack = 40, Defense = 30, SpAtk = 80, SpDef = 50, Speed = 80},
+		Evolutions = {TargetID = 3, Method = "Level", Condition = 32},
+		Ability = {"MoltenScales"},
+		HiddenAbility = nil,
+		BaseMoves = {"FireSpurt"},
+		LevelUpMoves = {
+			[18] = {"Flamethrower"}, [24] = {"DragonBreath"}, [30] = {"DragonDance"},
+		},
+		TutorMoves = {"", ""},
+		Description = "Wyrmfire has entered a boisterous teenage phase. Its body has elongated, and it has developed stronger, angular scales that better protect it against heat. The flames it spits out are no longer simple sparks but volatile fireballs. Although it has gained attack power, it is often impatient and constantly tests its new strength by scorching trees and rocks.",
+	},
+	[3] = {
+		Name = "Draconiax",
+		Type = {"Fire", "Dragon"},
+		BaseStats = {HP = 95, Attack = 85, Defense = 60, SpAtk = 110, SpDef = 70, Speed = 80},
+		Evolutions = nil,
+		Ability = {"DragonSurge"},
+		HiddenAbility = "WyrmResonance",
+		BaseMoves = {"DragonDance", "FireBlast"},
+		LevelUpMoves = {
+			[35] = {"Flamethrower"}, [45] = {"FireBlast"}, [60] = {"Round"},
+		},
+		TutorMoves = {"", ""},
+		Description = "Draconiax is the ultimate form of this creature, a proud and dominant dragon whose body glows with inferno-like heat. Its scales are as hard as obsidian, and its wings can create cyclones of flames. Even its defenses are unmatched. It is a master of its fire, capable of delivering both precise arson and devastating outbursts of power to defend its territory.",
+	},
+}
+
+return CreatureData]]></ProtectedString>
+					<string name="ScriptGuid">{B0590A04-34B3-44C3-BF20-FB0887FA26C9}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">CreatureData</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">5340f2d868e258eb0923412b000006f4</UniqueId>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBXF5D30DB78AC648C39AC8F07E03D92CFE">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[-- AbilityData Module
+-- Contains the static blueprint data for all abilities.
+local AbilityData = {}
+
+AbilityData.ABILITY_DATA = {
+	["PyrePower"] = {
+		ID = 1,
+		Name = "Pyre Power",
+		Trigger = "OnAttackExecuted",
+		Scope = "UserOnly",
+		Description = "Increases the power of Fire-type moves by 20%.",
+		Effect = {"BoostTypeDamage", "Fire", 1.20}, -- [Action, Type, Multiplier]
+	},
+
+	["MoltenScales"] = {
+		ID = 2,
+		Name = "Molten Scales",
+		Trigger = "OnPhysicalDamageTaken",
+		Scope = "OpponentOnly",
+		Description = "When hit by a Physical move, the attacker takes recoil and may be Burned.",
+		Effect = {"RecoilDamage", 0.125, "BurnChance", 0.10}, -- [Action, Value, Status, Chance]
+	},
+
+	["DragonSurge"] = {
+		ID = 3,
+		Name = "Dragon Surge",
+		Trigger = "OnEntry",
+		Scope = "UserOnly",
+		Description = "Boosts the user's Speed stat by one stage upon entering battle.",
+		Effect = {"StatChange", "Speed", 1}, -- [Action, Stat, Stages]
+	},
+	["WyrmResonance"] = {
+		ID = 4,
+		Name = "Wyrm Resonance",
+		Trigger = "OnMoveUsedGlobal",
+		Scope = "UserOnly",
+		Description = "Gains a small boost to Attack and Sp. Attack when any creature uses Dragon Dance.",
+		Effect = {"StatChangeGlobal", "DragonDance", "Attack", 0.5, "SpAtk", 0.5}, -- 0.5 stages (small boost)
+	},
+}
+
+return AbilityData]]></ProtectedString>
+					<string name="ScriptGuid">{A591808D-3883-4AE0-AD34-B3579F921F51}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">AbilityData</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">5340f2d868e258eb0923412b000006f9</UniqueId>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBX5B435DC6937C449FBDF0C584AE21D5DA">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[local MoveData = {}
+
+-- [[ Static Data: The Blueprint for all Attacks ]]
+MoveData.MOVE_DATA = {
+	["Tackle"] = {
+		ID = 1,
+		Name = "Tackle",
+		Type = "Normal",
+		Category = "Physical",
+		Power = 40,
+		Accuracy = 100,
+		PP = 35,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {nil},
+		Description = "A physical charge into the target.",
+	},
+	["Round"] = {
+		ID = 2,
+		Name = "Round",
+		Type = "Normal",
+		Category = "Special",
+		Power = 40,
+		Accuracy = 100,
+		PP = 35,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {nil},
+		Description = "A sound-based attack that works well in a team.",
+	},
+	["Ember"] = {
+		ID = 3,
+		Name = "Ember",
+		Type = "Fire",
+		Category = "Special",
+		Power = 40,
+		Accuracy = 100,
+		PP = 25,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"BurnChance"}, -- 10% chance to Burn
+		Description = "Shoots a small flame at the foe. May cause a burn.",
+	},
+	["Flamethrower"] = {
+		ID = 4,
+		Name = "Flamethrower",
+		Type = "Fire",
+		Category = "Special",
+		Power = 90,
+		Accuracy = 100,
+		PP = 15,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"BurnChance"}, -- 10% chance to Burn
+		Description = "Unleashes a powerful stream of fire. May cause a burn.",
+	},
+	["DragonDance"] = {
+		ID = 5,
+		Name = "Dragon Dance",
+		Type = "Dragon",
+		Category = "Buff",
+		Power = nil,
+		Accuracy = nil,
+		PP = 10,
+		Target = "Self",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"SpAtkUp+", "AtkUp+"}, -- Boosts Attack and Special Attack by one stage
+		Description = "A mystical dance that raises Attack and Special Attack.",
+	},
+	["FireSpurt"] = {
+		ID = 6,
+		Name = "Fire Spurt",
+		Type = "Fire",
+		Category = "Special",
+		Power = 50,
+		Accuracy = 100,
+		PP = 25,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {nil},
+		Description = "Breathes a simple, short burst of fire at the target.",
+	},
+	["FireBlast"] = {
+		ID = 7,
+		Name = "Fire Blast",
+		Type = "Fire",
+		Category = "Special",
+		Power = 110,
+		Accuracy = 85,
+		PP = 5,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"HeavyBurnChance"}, -- Higher chance to Burn (e.g., 30%)
+		Description = "A massive burst of fire in the shape of a star. Has a high chance to burn.",
+	},
+	["DragonBreath"] = {
+		ID = 8,
+		Name = "Dragon Breath",
+		Type = "Dragon",
+		Category = "Special",
+		Power = 60,
+		Accuracy = 100,
+		PP = 20,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"ParalyzeChance"}, -- 30% chance to Paralyze
+		Description = "A damaging attack using a sharp gust of foul breath. May paralyze the foe.",
+	},
+	["Roar"] = {
+		ID = 9,
+		Name = "Roar",
+		Type = "Normal",
+		Category = "Utility",
+		Power = nil,
+		Accuracy = nil,
+		PP = 20,
+		Target = "AllOpponents",
+		Priority = -6, -- A negative priority ensures it goes last
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"ForceSwitch"}, -- Forces the opponent to switch out
+		Description = "The user emits a terrifying sound, forcing the foe to flee the battle.",
+	},
+}
+
+return MoveData]]></ProtectedString>
+					<string name="ScriptGuid">{3C8778F5-78EF-400B-A885-D8C09A8FD81B}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">MoveData</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">5340f2d868e258eb0923412b000006fc</UniqueId>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="Folder" referent="RBXC16A75D8AE39465AA460855B4AE329F6">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+				<string name="Name">Module</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<UniqueId name="UniqueId">5340f2d868e258eb0923412b000006f8</UniqueId>
+			</Properties>
+			<Item class="ModuleScript" referent="RBXE1861669032E4D6E9F61A96D9FA47039">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[-- TypeChartModule
 -- Stores all type effectiveness multipliers (2x, 0.5x, 0x)
 
 local TypeChart = {}
@@ -1712,280 +2011,26 @@ function TypeChart.getMultiplier(attackingType: string, defendingType: string): 
 end
 
 return TypeChart]]></ProtectedString>
-				<string name="ScriptGuid">{C22C715C-1E54-45B5-8859-441D1E3BF08A}</string>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
-				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-				<string name="Name">TypeChartModule</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">291759ad7f658b960922381a000006ca</UniqueId>
-			</Properties>
-		</Item>
-		<Item class="ModuleScript" referent="RBX2FE1E0E91AC94855BD3B0F5FC7D667E0">
-			<Properties>
-				<Content name="LinkedSource"><null></null></Content>
-				<ProtectedString name="Source"><![CDATA[-- CreatureModule (In ServerStorage)
--- Defines the blueprint for all creatures and calculates their actual stats based on level.
-
-local CreatureModule = {}
-
--- [[ 1. Static Data: The Blueprint (The "Pokedex" Data) ]]
-CreatureModule.BASE_DATA = {
-	[1] = {
-		Name = "Scaldar",
-		Type = {"Fire"},
-		BaseStats = {HP = 40, Attack = 30, Defense = 20, SpAtk = 50, SpDef = 30, Speed = 60},
-		Evolutions = {TargetID = 2, Method = "Level", Condition = 16},
-		Ability = {"PyrePower"},
-		HiddenAbility = nil,
-		BaseMoves = {},
-		LevelUpMoves = {
-			[1] = {"Round"}, [5] = {"Ember"}, [10] = {"Roar"}, [15] = {"DragonBreath"},
-		},
-		TutorMoves = {"", ""},
-		Description = "Scaldar is a cheerful, newly-hatched dragon whose tiny scales shimmer like glowing embers. Its basic fire power is still weak, allowing it only to spit out small sparks. It compensates with unexpected speed, nimbly running around to find its favorite warm and sunny spots. The small, stable flame on its tail serves as a gauge of its health.",
-	},
-	[2] = {
-		Name = "Wyrmfire",
-		Type = {"Fire"},
-		BaseStats = {HP = 70, Attack = 40, Defense = 30, SpAtk = 80, SpDef = 50, Speed = 80},
-		Evolutions = {TargetID = 3, Method = "Level", Condition = 32},
-		Ability = {"MoltenScales"},
-		HiddenAbility = nil,
-		BaseMoves = {"FireSpurt"},
-		LevelUpMoves = {
-			[18] = {"Flamethrower"}, [24] = {"DragonBreath"}, [30] = {"DragonDance"},
-		},
-		TutorMoves = {"", ""},
-		Description = "Wyrmfire has entered a boisterous teenage phase. Its body has elongated, and it has developed stronger, angular scales that better protect it against heat. The flames it spits out are no longer simple sparks but volatile fireballs. Although it has gained attack power, it is often impatient and constantly tests its new strength by scorching trees and rocks.",
-	},
-	[3] = {
-		Name = "Draconiax",
-		Type = {"Fire", "Dragon"},
-		BaseStats = {HP = 95, Attack = 85, Defense = 60, SpAtk = 110, SpDef = 70, Speed = 80},
-		Evolutions = nil,
-		Ability = {"DragonSurge"},
-		HiddenAbility = "WyrmResonance",
-		BaseMoves = {"DragonDance", "FireBlast"},
-		LevelUpMoves = {
-			[35] = {"Flamethrower"}, [45] = {"FireBlast"}, [60] = {"Round"},
-		},
-		TutorMoves = {"", ""},
-		Description = "Draconiax is the ultimate form of this creature, a proud and dominant dragon whose body glows with inferno-like heat. Its scales are as hard as obsidian, and its wings can create cyclones of flames. Even its defenses are unmatched. It is a master of its fire, capable of delivering both precise arson and devastating outbursts of power to defend its territory.",
-	},
-}
-
--- [[ 2. The Stat Calculation Function ]]
-
---- Calculates a creature's stats based on its Base Stats and Level.
-function CreatureModule:CalculateStats(baseStats: table, level: number): table
-	local calculatedStats = {}
-
-	-- The common RPG/Creature formula ensures creatures scale predictably.
-	-- HP Calculation (usually unique)
-	calculatedStats.HP = math.floor( (2 * baseStats.HP * level) / 100 + level + 10 )
-
-	-- Other Stats (Attack, Defense, etc.) Calculation
-	for statName, baseValue in pairs(baseStats) do
-		if statName ~= "HP" then
-			calculatedStats[statName] = math.floor( (2 * baseValue * level) / 100 + 5 )
-		end
-	end
-
-	return calculatedStats
-end
-
--- [[ 3. The Constructor Function (The "Instance" Creator) ]]
-
-local CreatureInstance = {}
-CreatureInstance.__index = CreatureInstance
-
---- Creates a new, active creature object (an instance) for use in battle or player inventory.
-function CreatureModule.new(creatureID: number, level: number): table
-	local baseData = CreatureModule.BASE_DATA[creatureID]
-
-	if not baseData then
-		warn("Creature ID", creatureID, "not found!")
-		return {} 
-	end
-
-	local self = setmetatable({}, CreatureInstance)
-
-	-- Static properties inherited from the blueprint
-	self.ID = creatureID
-	self.Name = baseData.Name
-	self.Type = baseData.Type
-
-	-- Dynamic properties unique to this instance
-	self.Level = level
-	self.EXP = 0
-	self.CurrentStats = CreatureModule:CalculateStats(baseData.BaseStats, self.Level)
-	self.CurrentHP = self.CurrentStats.HP 
-	self.Moves = {} -- To be loaded from a separate MoveModule/Data
-
-	return self
-end
-
-return CreatureModule]]></ProtectedString>
-				<string name="ScriptGuid">{446B2BF1-D6CC-468D-BA9B-234C7E334CE5}</string>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
-				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-				<string name="Name">CreatureModule</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">291759ad7f658b960922381a000006d4</UniqueId>
-			</Properties>
-		</Item>
-		<Item class="ModuleScript" referent="RBXE2E21C1968CC4F8E81BE37565402C95D">
-			<Properties>
-				<Content name="LinkedSource"><null></null></Content>
-				<ProtectedString name="Source"><![CDATA[-- MoveModule (In ServerStorage)
+					<string name="ScriptGuid">{C22C715C-1E54-45B5-8859-441D1E3BF08A}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">TypeChartModule</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">291759ad7f658b960922381a000006ca</UniqueId>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBXE2E21C1968CC4F8E81BE37565402C95D">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[-- MoveModule (In ServerStorage)
 -- Defines the static properties for every attack in the game.
-
+local MoveData = require(script.Parent.Parent.Data.MoveData)
 local MoveModule = {}
+MoveModule.MOVE_DATA = MoveData.MOVE_DATA
 
--- [[ Static Data: The Blueprint for all Attacks ]]
-MoveModule.MOVE_DATA = {
-	["Tackle"] = {
-		ID = 1,
-		Name = "Tackle",
-		Type = "Normal",
-		Category = "Physical",
-		Power = 40,
-		Accuracy = 100,
-		PP = 35,
-		Target = "SingleOpponent",
-		Priority = 0,
-		MakesContact = true,
-		Recoil = 0,
-		Effect = {nil},
-		Description = "A physical charge into the target.",
-	},
-	["Round"] = {
-		ID = 2,
-		Name = "Round",
-		Type = "Normal",
-		Category = "Special",
-		Power = 40,
-		Accuracy = 100,
-		PP = 35,
-		Target = "SingleOpponent",
-		Priority = 0,
-		MakesContact = false,
-		Recoil = 0,
-		Effect = {nil},
-		Description = "A sound-based attack that works well in a team.",
-	},
-	["Ember"] = {
-		ID = 3,
-		Name = "Ember",
-		Type = "Fire",
-		Category = "Special",
-		Power = 40,
-		Accuracy = 100,
-		PP = 25,
-		Target = "SingleOpponent",
-		Priority = 0,
-		MakesContact = false,
-		Recoil = 0,
-		Effect = {"BurnChance"}, -- 10% chance to Burn
-		Description = "Shoots a small flame at the foe. May cause a burn.",
-	},
-	["Flamethrower"] = {
-		ID = 4,
-		Name = "Flamethrower",
-		Type = "Fire",
-		Category = "Special",
-		Power = 90,
-		Accuracy = 100,
-		PP = 15,
-		Target = "SingleOpponent",
-		Priority = 0,
-		MakesContact = false,
-		Recoil = 0,
-		Effect = {"BurnChance"}, -- 10% chance to Burn
-		Description = "Unleashes a powerful stream of fire. May cause a burn.",
-	},
-	["DragonDance"] = {
-		ID = 5,
-		Name = "Dragon Dance",
-		Type = "Dragon",
-		Category = "Buff",
-		Power = nil,
-		Accuracy = nil,
-		PP = 10,
-		Target = "Self",
-		Priority = 0,
-		MakesContact = false,
-		Recoil = 0,
-		Effect = {"SpAtkUp+", "AtkUp+"}, -- Boosts Attack and Special Attack by one stage
-		Description = "A mystical dance that raises Attack and Special Attack.",
-	},
-	["FireSpurt"] = {
-		ID = 6,
-		Name = "Fire Spurt",
-		Type = "Fire",
-		Category = "Special",
-		Power = 50,
-		Accuracy = 100,
-		PP = 25,
-		Target = "SingleOpponent",
-		Priority = 0,
-		MakesContact = false,
-		Recoil = 0,
-		Effect = {nil},
-		Description = "Breathes a simple, short burst of fire at the target.",
-	},
-	["FireBlast"] = {
-		ID = 7,
-		Name = "Fire Blast",
-		Type = "Fire",
-		Category = "Special",
-		Power = 110,
-		Accuracy = 85,
-		PP = 5,
-		Target = "SingleOpponent",
-		Priority = 0,
-		MakesContact = false,
-		Recoil = 0,
-		Effect = {"HeavyBurnChance"}, -- Higher chance to Burn (e.g., 30%)
-		Description = "A massive burst of fire in the shape of a star. Has a high chance to burn.",
-	},
-	["DragonBreath"] = {
-		ID = 8,
-		Name = "Dragon Breath",
-		Type = "Dragon",
-		Category = "Special",
-		Power = 60,
-		Accuracy = 100,
-		PP = 20,
-		Target = "SingleOpponent",
-		Priority = 0,
-		MakesContact = false,
-		Recoil = 0,
-		Effect = {"ParalyzeChance"}, -- 30% chance to Paralyze
-		Description = "A damaging attack using a sharp gust of foul breath. May paralyze the foe.",
-	},
-	["Roar"] = {
-		ID = 9,
-		Name = "Roar",
-		Type = "Normal",
-		Category = "Utility",
-		Power = nil,
-		Accuracy = nil,
-		PP = 20,
-		Target = "AllOpponents",
-		Priority = -6, -- A negative priority ensures it goes last
-		MakesContact = false,
-		Recoil = 0,
-		Effect = {"ForceSwitch"}, -- Forces the opponent to switch out
-		Description = "The user emits a terrifying sound, forcing the foe to flee the battle.",
-	},
-}
 
 --- Retrieves the static data for a given move name.
 function MoveModule.getMoveData(moveName: string): table
@@ -1993,21 +2038,212 @@ function MoveModule.getMoveData(moveName: string): table
 end
 
 return MoveModule]]></ProtectedString>
-				<string name="ScriptGuid">{495C30A0-0297-471C-9D23-F42A2D6C146E}</string>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
-				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-				<string name="Name">MoveModule</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">291759ad7f658b960922381a000006d7</UniqueId>
-			</Properties>
-		</Item>
-		<Item class="ModuleScript" referent="RBX7DF64F07706E49DB8E775CCD4C674F83">
-			<Properties>
-				<Content name="LinkedSource"><null></null></Content>
-				<ProtectedString name="Source"><![CDATA[-- CombatModule (In ServerStorage)
+					<string name="ScriptGuid">{495C30A0-0297-471C-9D23-F42A2D6C146E}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">MoveModule</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">291759ad7f658b960922381a000006d7</UniqueId>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBX4B2AEEC2F8624AD9A2660D5D1D71D36D">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[-- AbilityModule (In ServerStorage)
+-- Defines the secure static properties for all creature abilities.
+local AbilityData = require(script.Parent.Parent.Data.AbilityData)
+local AbilityModule = {}
+AbilityModule.ABILITY_DATA = AbilityData.ABILITY_DATA
+
+--- Retrieves the static data for a given ability name.
+function AbilityModule.getAbilityData(abilityName: string): table
+	return AbilityModule.ABILITY_DATA[abilityName]
+end
+
+return AbilityModule]]></ProtectedString>
+					<string name="ScriptGuid">{D14C9545-8C09-42BC-8266-6093571F3DEB}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">AbilityModule</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">5340f2d868e258eb0923412b000006eb</UniqueId>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBX2FE1E0E91AC94855BD3B0F5FC7D667E0">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[-- CreatureModule (In ServerStorage)
+-- Calculates their actual stats based on level.
+local CreatureData = require(script.Parent.Parent.Data.CreatureData)
+local CreatureModule = {}
+CreatureModule.BASE_DATA = CreatureData.BASE_DATA
+
+-- [[ 1. The Stat Calculation Function ]]
+function CreatureModule:CalculateStats(baseStats: table, level: number): table
+	local calculatedStats = {}
+	calculatedStats.HP = math.floor( (2 * baseStats.HP * level) / 100 + level + 10 )
+	for statName, baseValue in pairs(baseStats) do
+		if statName ~= "HP" then
+			calculatedStats[statName] = math.floor( (2 * baseValue * level) / 100 + 5 )
+		end
+	end
+	return calculatedStats
+end
+
+-- [[ 2. Helper Function: Get Learnable Moves (Updated with Full Evolution Check) ]]
+function CreatureModule.getMovesLearnedAtLevel(creatureID: number, level: number): table
+	local learnedMoves = {} -- { [moveName] = true, ... } for uniqueness
+	local moveOrderMap = {}
+
+	local BASE_DATA = CreatureModule.BASE_DATA 
+
+	local function checkEvolutionChain(currentID: number, currentLevelLimit: number)
+		local currentData = BASE_DATA[currentID]
+		if not currentData then return end
+
+		for _, data in pairs(BASE_DATA) do
+			if data.Evolutions and data.Evolutions.TargetID == currentID then
+				checkEvolutionChain(data.ID, data.Evolutions.Condition)
+				break
+			end
+		end
+
+		if currentData.BaseMoves then
+			for _, moveName in ipairs(currentData.BaseMoves) do
+				if not learnedMoves[moveName] then
+					learnedMoves[moveName] = true
+					moveOrderMap[moveName] = currentLevelLimit 
+				end
+			end
+		end
+
+		local maxLevelCheck = (currentID == creatureID) and currentLevelLimit or currentData.Evolutions.Condition
+
+		for requiredLevel, moves in pairs(currentData.LevelUpMoves) do
+			if requiredLevel <= maxLevelCheck then
+				for _, moveName in ipairs(moves) do
+					if not learnedMoves[moveName] then
+						learnedMoves[moveName] = true
+						moveOrderMap[moveName] = requiredLevel
+					end
+				end
+			end
+		end
+	end
+
+	-- Start the recursive check from the final creature's ID and level
+	checkEvolutionChain(creatureID, level)
+
+	-- Convert the moves into a final list, ordered by the level they were learned
+	local orderedMoves = {}
+	local sortedMovesByLevel = {}
+
+	-- Populate a table with {level, moveName} pairs
+	for moveName, learnLevel in pairs(moveOrderMap) do
+		table.insert(sortedMovesByLevel, {Level = learnLevel, Name = moveName})
+	end
+
+	-- Sort the moves based on their learning level (ascending)
+	table.sort(sortedMovesByLevel, function(a, b)
+		-- Primary sort key: Level
+		if a.Level ~= b.Level then
+			return a.Level < b.Level
+		end
+		-- Secondary sort key (for moves learned at the same level): Alphabetical name
+		return a.Name < b.Name
+	end)
+
+	-- Extract just the move names into the final ordered list
+	for _, moveData in ipairs(sortedMovesByLevel) do
+		table.insert(orderedMoves, moveData.Name)
+	end
+
+	return orderedMoves
+end
+
+-- [[ 3. The Constructor Function (The "Instance" Creator) ]]
+
+local CreatureInstance = {}
+CreatureInstance.__index = CreatureInstance
+--- Creates a new, active creature object (an instance) for use in battle or player inventory.
+function CreatureModule.new(creatureID: number, level: number): table
+	local baseData = CreatureModule.BASE_DATA[creatureID]
+	if not baseData then
+		warn("Creature ID", creatureID, "not found!")
+		return {} 
+	end
+
+	local self = setmetatable({}, CreatureInstance)
+	-- Static properties inherited from the blueprint
+	self.ID = creatureID
+	self.Name = baseData.Name
+	self.Type = baseData.Type
+
+	-- Note: Renaming baseData.Ability to baseData.BaseAbilities is recommended
+	local possibleAbilities = baseData.Ability -- Array of standard abilities
+	local hiddenAbility = baseData.HiddenAbility -- String or nil
+	-- 1. Ability Assignment (Logic remains the same)
+	if hiddenAbility and math.random(1, 100) <= 5 then
+		self.ActiveAbility = hiddenAbility
+	elseif possibleAbilities and #possibleAbilities > 0 then
+		local selectedAbility = possibleAbilities[math.random(1, #possibleAbilities)]
+		self.ActiveAbility = selectedAbility
+	else
+		self.ActiveAbility = nil
+	end
+
+	-- Dynamic properties unique to this instance
+	self.Level = level
+	self.EXP = 0
+	self.CurrentStats = CreatureModule:CalculateStats(baseData.BaseStats, self.Level)
+	self.CurrentHP = self.CurrentStats.HP 
+
+	-- [[ MOVE TACTICAL ASSIGNMENT ]]
+	-- 1. Get all moves the creature should know at this level
+	local allLearnableMoves = CreatureModule.getMovesLearnedAtLevel(baseData, level)
+
+	-- 2. Assign the 4 most recently learned moves as the default tactical moveset
+	local MAX_MOVES = 4
+	local currentMoves = {}
+
+	if #allLearnableMoves > 0 then
+		-- We need to slice the list to get the last MAX_MOVES entries.
+		local start_index = math.max(1, #allLearnableMoves - MAX_MOVES + 1)
+
+		for i = start_index, #allLearnableMoves do
+			table.insert(currentMoves, allLearnableMoves[i])
+		end
+	end
+
+	-- Store the equipped moves. This key is what gets saved/traded!
+	self.CurrentMoves = currentMoves 
+	-- self.AllKnownMoves = allLearnableMoves -- Optional: To save move history
+
+	return self
+end
+
+return CreatureModule]]></ProtectedString>
+					<string name="ScriptGuid">{446B2BF1-D6CC-468D-BA9B-234C7E334CE5}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">CreatureModule</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">291759ad7f658b960922381a000006d4</UniqueId>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBX7DF64F07706E49DB8E775CCD4C674F83">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[-- CombatModule (In ServerStorage)
 -- The central hub for all battle logic, ensuring calculations are server-authoritative.
 
 local CombatModule = {}
@@ -2017,50 +2253,58 @@ local CombatModule = {}
 local TypeChartModule = require(game.ServerStorage.TypeChartModule)
 local CreatureModule = require(game.ServerStorage.CreatureModule)
 local MoveModule = require(game.ServerStorage.MoveModule)
-
--- [[ 2. The Server-Authoritative Damage Calculation ]]
+local AbilityModule = require(game.ServerStorage.AbilityModule) -- NEW REQUIREMENT
 
 --- Calculates the final damage dealt by an attacker to a defender.
--- NOTE: This function only runs when called by the server.
 function CombatModule.CalculateDamage(attackerInstance: table, defenderInstance: table, moveName: string): number
 
-	-- 2A. Retrieve Secure Move Data
-	-- [Why Server?] Ensures the client can't lie about the move's Power or Type.
+	-- Retrieve Secure Move Data
 	local moveData = MoveModule.getMoveData(moveName)
 	if not moveData then return 0 end -- Safety check
 
-	-- 2B. Determine Stats based on Move Category (Physical, Special)
+	-- Determine Stats based on Move Category (Physical, Special)
 	local attackStatKey = (moveData.Category == "Physical") and "Attack" or "SpAtk"
 	local defenseStatKey = (moveData.Category == "Physical") and "Defense" or "SpDef"
 
 	local attackStat = attackerInstance.CurrentStats[attackStatKey]
 	local defenseStat = defenderInstance.CurrentStats[defenseStatKey]
 
-	-- 2C. Base Formula Calculation (Uses the standard creature formula)
+	-- Base Formula Calculation (Uses the standard creature formula)
 	local damage = (
 		( (2 * attackerInstance.Level / 5 + 2) * moveData.Power * (attackStat / defenseStat) / 50 )
 	) + 2
 
-	-- 2D. Apply Modifiers (The Heart of the Calculation)
+	-- Apply Modifiers (The Heart of the Calculation)
 	local totalMultiplier = 1
 
 	-- TYPE EFFECTIVENESS
-	-- [Why Server?] Uses the secure data from TypeChartModule, which clients cannot access.
-	local typeEffectiveness = TypeChartModule.getMultiplier(moveData.Type, defenderInstance.Type[1])
+	local typeEffectiveness = 1
+	for _, defendingType in ipairs(defenderInstance.Type) do
+		local singleTypeMultiplier = TypeChartModule.getMultiplier(moveData.Type, defendingType)
+		typeEffectiveness *= singleTypeMultiplier -- Multiply the effects (e.g., 2.0 * 0.5 = 1.0)
+	end
 	totalMultiplier *= typeEffectiveness
 
 	-- STAB (Same-Type Attack Bonus): 1.5x if the move type matches one of the attacker's types
-	-- [Why Server?] Prevents client from claiming 1.5x bonus when it's not applicable.
 	for _, type in ipairs(attackerInstance.Type) do
 		if type == moveData.Type then
 			totalMultiplier *= 1.5
 			break
 		end
 	end
+	
+	-- ABILITY MODIFIERS: Apply any ability-based modifiers
+	local attackerAbilityData = AbilityModule.getAbilityData(attackerInstance.Ability)
+	if attackerAbilityData and attackerAbilityData.Trigger == "OnAttackExecuted" then
+		local effect = attackerAbilityData.Effect
+		if effect[1] == "BoostTypeDamage" and effect[2] == moveData.Type then
+			-- Apply the boost (e.g., 1.20x from Pyre Power)
+			totalMultiplier *= effect[3]
+			print(attackerInstance.Name .. "'s " .. attackerAbilityData.Name .. " boosted damage!")
+		end
+	end
 
 	-- Critical Hit Logic (e.g., 6.25% chance)
-	-- [Why Server?] Prevents client from forcing a critical hit.
-
 	damage = math.floor(damage * totalMultiplier)
 
 	return math.max(1, damage) -- Damage is at least 1, unless type effectiveness is 0.
@@ -2080,79 +2324,17 @@ function CombatModule.ProcessBattleTurn(player, creatureInstanceID: string, move
 end
 
 return CombatModule]]></ProtectedString>
-				<string name="ScriptGuid">{27534606-2264-4059-BE4F-1BDC1ACE1363}</string>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
-				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-				<string name="Name">CombatModule</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">291759ad7f658b960922381a000006da</UniqueId>
-			</Properties>
-		</Item>
-		<Item class="ModuleScript" referent="RBX4B2AEEC2F8624AD9A2660D5D1D71D36D">
-			<Properties>
-				<Content name="LinkedSource"><null></null></Content>
-				<ProtectedString name="Source"><![CDATA[-- AbilityModule (In ServerStorage)
--- Defines the secure static properties for all creature abilities.
-
-local AbilityModule = {}
-
--- [[ Static Data: The Blueprint for all Abilities ]]
-AbilityModule.ABILITY_DATA = {
-	["PyrePower"] = {
-		ID = 1,
-		Name = "Pyre Power",
-		Trigger = "OnAttackExecuted",
-		Scope = "UserOnly",
-		Description = "Increases the power of Fire-type moves by 20%.",
-		Effect = {"BoostTypeDamage", "Fire", 1.20}, -- [Action, Type, Multiplier]
-	},
-
-	["MoltenScales"] = {
-		ID = 2,
-		Name = "Molten Scales",
-		Trigger = "OnPhysicalDamageTaken",
-		Scope = "OpponentOnly",
-		Description = "When hit by a Physical move, the attacker takes recoil and may be Burned.",
-		Effect = {"RecoilDamage", 0.125, "BurnChance", 0.10}, -- [Action, Value, Status, Chance]
-	},
-
-	["DragonSurge"] = {
-		ID = 3,
-		Name = "Dragon Surge",
-		Trigger = "OnEntry",
-		Scope = "UserOnly",
-		Description = "Boosts the user's Speed stat by one stage upon entering battle.",
-		Effect = {"StatChange", "Speed", 1}, -- [Action, Stat, Stages]
-	},
-	["WyrmResonance"] = {
-		ID = 4,
-		Name = "Wyrm Resonance",
-		Trigger = "OnMoveUsedGlobal",
-		Scope = "UserOnly",
-		Description = "Gains a small boost to Attack and Sp. Attack when any creature uses Dragon Dance.",
-		Effect = {"StatChangeGlobal", "DragonDance", "Attack", 0.5, "SpAtk", 0.5}, -- 0.5 stages (small boost)
-	},
-}
-
---- Retrieves the static data for a given ability name.
-function AbilityModule.getAbilityData(abilityName: string): table
-	return AbilityModule.ABILITY_DATA[abilityName]
-end
-
-return AbilityModule]]></ProtectedString>
-				<string name="ScriptGuid">{D14C9545-8C09-42BC-8266-6093571F3DEB}</string>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
-				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-				<string name="Name">AbilityModule</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">5340f2d868e258eb0923412b000006eb</UniqueId>
-			</Properties>
+					<string name="ScriptGuid">{27534606-2264-4059-BE4F-1BDC1ACE1363}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">CombatModule</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">291759ad7f658b960922381a000006da</UniqueId>
+				</Properties>
+			</Item>
 		</Item>
 	</Item>
 	<Item class="ServiceVisibilityService" referent="RBX04B52AC071894B8682961585598570BA">
