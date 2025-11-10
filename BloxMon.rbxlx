@@ -1733,49 +1733,47 @@ local CreatureModule = {}
 
 -- [[ 1. Static Data: The Blueprint (The "Pokedex" Data) ]]
 CreatureModule.BASE_DATA = {
-	-- ID 1001: Example Starter Creature
 	[1] = {
 		Name = "Scaldar",
-		Type = {"Fire"}, -- Creatures can have one or two types
+		Type = {"Fire"},
 		BaseStats = {HP = 40, Attack = 30, Defense = 20, SpAtk = 50, SpDef = 30, Speed = 60},
 		Evolutions = {TargetID = 2, Method = "Level", Condition = 16},
+		Ability = {"PyrePower"},
+		HiddenAbility = nil,
+		BaseMoves = {},
 		LevelUpMoves = {
-			[1] = {"Round"},
-			[5] = {"Ember"},
+			[1] = {"Round"}, [5] = {"Ember"}, [10] = {"Roar"}, [15] = {"DragonBreath"},
 		},
-		TutorMoves = {
-			"",
-			"",
-		}
+		TutorMoves = {"", ""},
+		Description = "Scaldar is a cheerful, newly-hatched dragon whose tiny scales shimmer like glowing embers. Its basic fire power is still weak, allowing it only to spit out small sparks. It compensates with unexpected speed, nimbly running around to find its favorite warm and sunny spots. The small, stable flame on its tail serves as a gauge of its health.",
 	},
-
-	-- ID 1002: Example Ground Creature
 	[2] = {
 		Name = "Wyrmfire",
 		Type = {"Fire"},
 		BaseStats = {HP = 70, Attack = 40, Defense = 30, SpAtk = 80, SpDef = 50, Speed = 80},
 		Evolutions = {TargetID = 3, Method = "Level", Condition = 32},
-		BaseMoves = {},
+		Ability = {"MoltenScales"},
+		HiddenAbility = nil,
+		BaseMoves = {"FireSpurt"},
 		LevelUpMoves = {
-			[16] = {"Flamethrower"},
+			[18] = {"Flamethrower"}, [24] = {"DragonBreath"}, [30] = {"DragonDance"},
 		},
-		TutorMoves = {
-			"",
-			"",
-		}
+		TutorMoves = {"", ""},
+		Description = "Wyrmfire has entered a boisterous teenage phase. Its body has elongated, and it has developed stronger, angular scales that better protect it against heat. The flames it spits out are no longer simple sparks but volatile fireballs. Although it has gained attack power, it is often impatient and constantly tests its new strength by scorching trees and rocks.",
 	},
 	[3] = {
 		Name = "Draconiax",
-		Type = {"Fire"},
-		BaseStats = {HP =90, Attack = 60, Defense = 30, SpAtk = 100, SpDef = 70, Speed = 100},
+		Type = {"Fire", "Dragon"},
+		BaseStats = {HP = 95, Attack = 85, Defense = 60, SpAtk = 110, SpDef = 70, Speed = 80},
 		Evolutions = nil,
+		Ability = {"DragonSurge"},
+		HiddenAbility = "WyrmResonance",
+		BaseMoves = {"DragonDance", "FireBlast"},
 		LevelUpMoves = {
-			[5] = {"Tackle"},
+			[35] = {"Flamethrower"}, [45] = {"FireBlast"}, [60] = {"Round"},
 		},
-		TutorMoves = {
-			"",
-			"",
-		}
+		TutorMoves = {"", ""},
+		Description = "Draconiax is the ultimate form of this creature, a proud and dominant dragon whose body glows with inferno-like heat. Its scales are as hard as obsidian, and its wings can create cyclones of flames. Even its defenses are unmatched. It is a master of its fire, capable of delivering both precise arson and devastating outbursts of power to defend its territory.",
 	},
 }
 
@@ -1855,12 +1853,17 @@ MoveModule.MOVE_DATA = {
 	["Tackle"] = {
 		ID = 1,
 		Name = "Tackle",
-		Type = "Normal",      -- Used for Type Effectiveness and STAB
-		Category = "Physical",  -- Affects whether Attack/Defense or SpAtk/SpDef is used
-		Power = 40,           -- Base power used in the damage formula
-		Accuracy = 100,       -- Hit chance percentage (1 to 100)
-		PP = 35,              -- Uses per creature
-		Effect = nil,         -- Special effects (e.g., flinching, lowering stat)
+		Type = "Normal",
+		Category = "Physical",
+		Power = 40,
+		Accuracy = 100,
+		PP = 35,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {nil},
+		Description = "A physical charge into the target.",
 	},
 	["Round"] = {
 		ID = 2,
@@ -1870,7 +1873,12 @@ MoveModule.MOVE_DATA = {
 		Power = 40,
 		Accuracy = 100,
 		PP = 35,
-		Effect = nil,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {nil},
+		Description = "A sound-based attack that works well in a team.",
 	},
 	["Ember"] = {
 		ID = 3,
@@ -1880,7 +1888,12 @@ MoveModule.MOVE_DATA = {
 		Power = 40,
 		Accuracy = 100,
 		PP = 25,
-		Effect = nil,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"BurnChance"}, -- 10% chance to Burn
+		Description = "Shoots a small flame at the foe. May cause a burn.",
 	},
 	["Flamethrower"] = {
 		ID = 4,
@@ -1890,7 +1903,87 @@ MoveModule.MOVE_DATA = {
 		Power = 90,
 		Accuracy = 100,
 		PP = 15,
-		Effect = "BurnChance", -- Special effect: 10% chance to Burn
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"BurnChance"}, -- 10% chance to Burn
+		Description = "Unleashes a powerful stream of fire. May cause a burn.",
+	},
+	["DragonDance"] = {
+		ID = 5,
+		Name = "Dragon Dance",
+		Type = "Dragon",
+		Category = "Buff",
+		Power = nil,
+		Accuracy = nil,
+		PP = 10,
+		Target = "Self",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"SpAtkUp+", "AtkUp+"}, -- Boosts Attack and Special Attack by one stage
+		Description = "A mystical dance that raises Attack and Special Attack.",
+	},
+	["FireSpurt"] = {
+		ID = 6,
+		Name = "Fire Spurt",
+		Type = "Fire",
+		Category = "Special",
+		Power = 50,
+		Accuracy = 100,
+		PP = 25,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {nil},
+		Description = "Breathes a simple, short burst of fire at the target.",
+	},
+	["FireBlast"] = {
+		ID = 7,
+		Name = "Fire Blast",
+		Type = "Fire",
+		Category = "Special",
+		Power = 110,
+		Accuracy = 85,
+		PP = 5,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"HeavyBurnChance"}, -- Higher chance to Burn (e.g., 30%)
+		Description = "A massive burst of fire in the shape of a star. Has a high chance to burn.",
+	},
+	["DragonBreath"] = {
+		ID = 8,
+		Name = "Dragon Breath",
+		Type = "Dragon",
+		Category = "Special",
+		Power = 60,
+		Accuracy = 100,
+		PP = 20,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"ParalyzeChance"}, -- 30% chance to Paralyze
+		Description = "A damaging attack using a sharp gust of foul breath. May paralyze the foe.",
+	},
+	["Roar"] = {
+		ID = 9,
+		Name = "Roar",
+		Type = "Normal",
+		Category = "Utility",
+		Power = nil,
+		Accuracy = nil,
+		PP = 20,
+		Target = "AllOpponents",
+		Priority = -6, -- A negative priority ensures it goes last
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {"ForceSwitch"}, -- Forces the opponent to switch out
+		Description = "The user emits a terrifying sound, forcing the foe to flee the battle.",
 	},
 }
 
@@ -1996,6 +2089,69 @@ return CombatModule]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 				<UniqueId name="UniqueId">291759ad7f658b960922381a000006da</UniqueId>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBX4B2AEEC2F8624AD9A2660D5D1D71D36D">
+			<Properties>
+				<Content name="LinkedSource"><null></null></Content>
+				<ProtectedString name="Source"><![CDATA[-- AbilityModule (In ServerStorage)
+-- Defines the secure static properties for all creature abilities.
+
+local AbilityModule = {}
+
+-- [[ Static Data: The Blueprint for all Abilities ]]
+AbilityModule.ABILITY_DATA = {
+	["PyrePower"] = {
+		ID = 1,
+		Name = "Pyre Power",
+		Trigger = "OnAttackExecuted",
+		Scope = "UserOnly",
+		Description = "Increases the power of Fire-type moves by 20%.",
+		Effect = {"BoostTypeDamage", "Fire", 1.20}, -- [Action, Type, Multiplier]
+	},
+
+	["MoltenScales"] = {
+		ID = 2,
+		Name = "Molten Scales",
+		Trigger = "OnPhysicalDamageTaken",
+		Scope = "OpponentOnly",
+		Description = "When hit by a Physical move, the attacker takes recoil and may be Burned.",
+		Effect = {"RecoilDamage", 0.125, "BurnChance", 0.10}, -- [Action, Value, Status, Chance]
+	},
+
+	["DragonSurge"] = {
+		ID = 3,
+		Name = "Dragon Surge",
+		Trigger = "OnEntry",
+		Scope = "UserOnly",
+		Description = "Boosts the user's Speed stat by one stage upon entering battle.",
+		Effect = {"StatChange", "Speed", 1}, -- [Action, Stat, Stages]
+	},
+	["WyrmResonance"] = {
+		ID = 4,
+		Name = "Wyrm Resonance",
+		Trigger = "OnMoveUsedGlobal",
+		Scope = "UserOnly",
+		Description = "Gains a small boost to Attack and Sp. Attack when any creature uses Dragon Dance.",
+		Effect = {"StatChangeGlobal", "DragonDance", "Attack", 0.5, "SpAtk", 0.5}, -- 0.5 stages (small boost)
+	},
+}
+
+--- Retrieves the static data for a given ability name.
+function AbilityModule.getAbilityData(abilityName: string): table
+	return AbilityModule.ABILITY_DATA[abilityName]
+end
+
+return AbilityModule]]></ProtectedString>
+				<string name="ScriptGuid">{D14C9545-8C09-42BC-8266-6093571F3DEB}</string>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+				<string name="Name">AbilityModule</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<UniqueId name="UniqueId">5340f2d868e258eb0923412b000006eb</UniqueId>
 			</Properties>
 		</Item>
 	</Item>
