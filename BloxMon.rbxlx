@@ -1672,7 +1672,6 @@ return CreatureData]]></ProtectedString>
 local AbilityData = {}
 
 AbilityData.ABILITY_DATA = {
-	-- --- Existing Custom Abilities (ID 1-4) ---
 	["PyrePower"] = {
 		ID = 1,
 		Name = "Pyre Power",
@@ -1715,8 +1714,6 @@ AbilityData.ABILITY_DATA = {
 			{"StatChange", "SpAtk", 0.5}, -- [Action, Stat, Stages]
 		},
 	},
-
-	-- --- General Utility Abilities (ID 5-8) ---
 	["ThickFat"] = {
 		ID = 5,
 		Name = "Thick Fat",
@@ -1758,8 +1755,6 @@ AbilityData.ABILITY_DATA = {
 			{"GiveStatus", "Poison", 0.30},
 		},
 	},
-
-	-- --- Starter Core Abilities (ID 9-10) ---
 	["Overgrow"] = {
 		ID = 9,
 		Name = "Overgrow",
@@ -2860,16 +2855,251 @@ return TypeChart]]></ProtectedString>
 			<Item class="ModuleScript" referent="RBXE2E21C1968CC4F8E81BE37565402C95D">
 				<Properties>
 					<Content name="LinkedSource"><null></null></Content>
-					<ProtectedString name="Source"><![CDATA[-- MoveModule (In ServerStorage)
--- Defines the static properties for every attack in the game.
-local MoveData = require(script.Parent.Parent.Data.MoveData)
+					<ProtectedString name="Source"><![CDATA[-- File: ServerStorage/Modules/MoveModule.lua
+
+local ServerStorage = script.Parent.Parent
+local MoveData = require(ServerStorage.Data.MoveData)
+local AbilityModule = require(ServerStorage.Modules.AbilityModule) -- Your completed Ability module
+
 local MoveModule = {}
 MoveModule.MOVE_DATA = MoveData.MOVE_DATA
 
+-- --- Internal Helpers ---
 
---- Retrieves the static data for a given move name.
-function MoveModule.getMoveData(moveName: string): table
-	return MoveModule.MOVE_DATA[moveName]
+-- Helper function to execute stat changes, status, and other direct effects listed in the move data.
+-- This is the centralized handler for the 'Effect' array in MoveData.
+-- RETURNS: Table of structured combat log events.
+local function executeMoveEffects(user: table, target: table, move: table): table
+	local events = {}
+	local effects = move.Effect or {}
+	local moveName = move.Name
+
+	for _, effectAction in ipairs(effects) do
+		local actionType = effectAction[1]
+		local primaryTarget = target -- Default to target, adjust for Self effects later
+
+		if actionType == "StatChange" then
+			-- For Stat changes, the target is the user if the move targets Self (e.g., Swords Dance)
+			primaryTarget = (move.Target == "Self" and user) or target
+
+			local statName, stages = effectAction[2], effectAction[3]
+
+			-- Stat Change Interception Check (e.g., Clear Body, Hyper Cutter)
+			local sourceIsOpponent = (primaryTarget.ID ~= user.ID)
+			local negated = AbilityModule.checkStatChangeInterception(primaryTarget, statName, stages, sourceIsOpponent)
+
+			if not negated then
+				primaryTarget:ApplyStatBoost(statName, stages) -- PSEUDO-CODE
+				table.insert(events, {
+					EventType = "StatChange", Source = user.ID, Target = primaryTarget.ID,
+					Move = moveName, Stat = statName, Stages = stages, Success = true
+				})
+			else
+				table.insert(events, {
+					EventType = "StatChangeNegated", Target = primaryTarget.ID,
+					Ability = primaryTarget.ActiveAbility, Move = moveName
+				})
+			end
+
+		elseif actionType == "TargetStatChangeChance" then
+			local statName, stages, chance = effectAction[2], effectAction[3], effectAction[4]
+			if math.random() <= chance then
+				-- Stat Change Interception Check is also necessary here (same logic as above)
+				local negated = AbilityModule.checkStatChangeInterception(target, statName, stages, true)
+
+				if not negated then
+					target:ApplyStatBoost(statName, stages) -- PSEUDO-CODE
+					table.insert(events, {
+						EventType = "StatChange", Source = user.ID, Target = target.ID,
+						Move = moveName, Stat = statName, Stages = stages, Success = true
+					})
+				end
+			end
+
+		elseif actionType == "GiveStatusChance" or actionType == "GiveStatus" then
+			local status = effectAction[2]
+			local chance = effectAction[3] or 1.0 -- Use 1.0 if not specified (for GiveStatus)
+
+			if math.random() <= chance then
+				-- Status Immunity Check (e.g., Immunity ability)
+				local isImmune = AbilityModule.checkStatusImmunity(target, status)
+
+				if not isImmune then
+					local success = target:AttemptApplyStatusEffect(status, 1.0) -- PSEUDO-CODE
+					table.insert(events, {
+						EventType = "StatusAttempt", Source = user.ID, Target = target.ID,
+						Move = moveName, Status = status, Chance = chance, Success = success
+					})
+				else
+					table.insert(events, {
+						EventType = "StatusNegated", Target = target.ID, Status = status,
+						Ability = target.ActiveAbility, Message = string.format("%s is immune!", target.Name)
+					})
+				end
+			end
+
+			-- Placeholder for complex effects without damage component
+		elseif actionType == "ForceSwitch" or actionType == "LockDown" or actionType == "SetEntryHazard" then
+			-- These require specialized logic and calls to the BattleController/Field module
+			table.insert(events, {EventType = "SpecialEffect", Move = moveName, Action = actionType})
+
+			-- Placeholder for effects that occur AFTER damage calculation is final (like HP drain/recoil)
+		elseif actionType == "HealFractionDamage" then
+			-- This must be handled in the main executeMove function AFTER damage is determined.
+			-- Add a placeholder to the events log to trigger healing later.
+			table.insert(events, {EventType = "HealIntent", Move = moveName, Action = actionType, Fraction = effectAction[2]})
+
+		elseif actionType == "HealFractionMaxHP" then
+			local fraction = effectAction[2]
+			local healingAmount = user.MaxHP * fraction
+			user:Heal(healingAmount) -- PSEUDO-CODE
+
+			table.insert(events, {
+				EventType = "Healing", Source = user.ID, Target = user.ID, Move = moveName, Amount = healingAmount
+			})
+
+			-- Placeholder for Recoil Damage (RecoilDamageFixed)
+		elseif actionType == "RecoilDamageFixed" then
+			-- This must be handled in the main executeMove function AFTER damage is determined.
+			table.insert(events, {EventType = "RecoilIntent", Move = moveName, Action = actionType, Fraction = effectAction[2]})
+		end
+	end
+
+	return events
+end
+
+-- Helper function to calculate the core damage (before ability/type modifiers)
+local function calculateBaseDamage(attacker: table, defender: table, move: table): number
+	-- Handle moves that use Defense instead of Attack (e.g., Body Press)
+	local isBodyPress = (move.Effect and table.find(move.Effect, "DefenseDamageCalculation"))
+
+	local attackStatKey = (move.Category == "Physical" and "Attack") or (move.Category == "Special" and "SpAtk")
+	local defenseStatKey = (move.Category == "Physical" and "Defense") or (move.Category == "Special" and "SpDef")
+
+	local attackStat = attacker[attackStatKey] -- PSEUDO-CODE: Get current stat value
+	local defenseStat = defender[defenseStatKey] -- PSEUDO-CODE: Get current stat value
+
+	if isBodyPress then
+		attackStat = attacker.Defense -- Use user's Defense as the attacking stat
+	end
+
+	-- Basic Damage Formula: (MovePower * AttackStat / DefenseStat) / 2
+	local damage = (move.Power or 0) * (attackStat / defenseStat) * 0.5 
+
+	return math.max(1, math.floor(damage))
+end
+
+-- Helper to check if a move makes contact
+local function doesMoveMakeContact(move: table): boolean
+	return move.MakesContact == true
+end
+
+
+-- --- Public Execution Handler ---
+
+-- Executes a move from an attacker onto a defender.
+-- RETURNS: A comprehensive table of all Combat Events generated by this move.
+function MoveModule.executeMove(attacker: table, defender: table, moveName: string): table
+	local events = {}
+	local move = MoveModule.MOVE_DATA[moveName]
+
+	if not move then return {{EventType = "Error", Message = "Move not found: " .. moveName}} end
+
+	table.insert(events, {
+		EventType = "MoveUsed", Source = attacker.ID, Target = defender.ID, Move = move.Name
+	})
+
+	-- Utility/Status moves that do NOT deal damage (e.g., Dragon Dance, Protect)
+	if move.Category == "Utility" or move.Category == "Status" or move.Category == "Heal" then
+		local effectEvents = executeMoveEffects(attacker, defender, move)
+		for _, event in ipairs(effectEvents) do table.insert(events, event) end
+
+		-- Special trigger for Global Move Used Handler (e.g., Wyrm Resonance on Dragon Dance)
+		-- Note: This requires passing the list of active creatures, which the BattleController supplies
+		-- We will assume the BattleController handles this call after executeMove returns.
+
+		return events
+	end
+
+	-- --- DAMAGING MOVE EXECUTION FLOW ---
+
+	-- 1. Accuracy Check (Simplified)
+	if move.Accuracy and math.random() > (move.Accuracy / 100) then 
+		table.insert(events, {EventType = "MoveMiss", Message = string.format("%s's %s missed!", attacker.Name, move.Name)})
+		return events
+	end
+
+	local baseDamage = calculateBaseDamage(attacker, defender, move)
+	local finalMultiplier = 1.0
+
+	-- 2. Apply Attacker Ability Multipliers (e.g., Pyre Power, Overgrow)
+	finalMultiplier = finalMultiplier * AbilityModule.calculateDamageMultiplier(attacker, move)
+
+	-- 3. Apply Defender Ability Multipliers (e.g., Thick Fat)
+	finalMultiplier = finalMultiplier * AbilityModule.getTypeDefenseMultiplier(defender, move.Type)
+
+	-- 4. Apply Type Effectiveness (PSEUDO-CODE)
+	local typeMultiplier = defender:GetTypeEffectiveness(move.Type) -- Assume a function in the creature model
+	finalMultiplier = finalMultiplier * typeMultiplier
+
+	-- 5. Calculate Final Damage
+	local finalDamage = math.max(1, math.floor(baseDamage * finalMultiplier))
+
+	-- 6. Apply Damage & Log Hit
+	defender:TakeDamage(finalDamage) -- PSEUDO-CODE: Applies damage to the creature's HP
+
+	table.insert(events, {
+		EventType = "DamageDealt", Source = attacker.ID, Target = defender.ID,
+		Damage = finalDamage, IsCritical = false, -- Critical Hit Logic will go here
+		Effectiveness = (typeMultiplier > 1.0 and "SuperEffective") or (typeMultiplier < 1.0 and "NotVeryEffective") or "Normal"
+	})
+
+	-- 7. Execute Post-Damage Ability Triggers (e.g., Iron Barbs, Poison Touch)
+	local contact = doesMoveMakeContact(move)
+	local postDamageEvents = AbilityModule.handlePostDamageEffects(attacker, defender, move, contact)
+	for _, event in ipairs(postDamageEvents) do table.insert(events, event) end
+
+	-- 8. Apply Move's Secondary Effects (Status, Stat changes)
+	local secondaryEffectEvents = executeMoveEffects(attacker, defender, move)
+	for _, event in ipairs(secondaryEffectEvents) do table.insert(events, event) end
+
+	-- 9. Handle Recoil and Draining (Needs final damage value from step 6)
+	for _, event in ipairs(secondaryEffectEvents) do
+		-- A) Recoil Damage (e.g., Flare Blitz's "RecoilDamageFixed")
+		if event.EventType == "RecoilIntent" and event.Action == "RecoilDamageFixed" then
+			local recoilFraction = event.Fraction
+
+			-- Recoil Prevention Check (e.g., Rock Head)
+			local isRecoilPrevented = AbilityModule.checkDamagePrevention(attacker, "Recoil")
+
+			if not isRecoilPrevented then
+				local recoilDamage = math.max(1, math.floor(attacker.MaxHP * recoilFraction)) -- Based on MaxHP
+				attacker:TakeDamage(recoilDamage) -- PSEUDO-CODE
+
+				table.insert(events, {
+					EventType = "RecoilDamage", Source = defender.ID, Target = attacker.ID,
+					Move = moveName, Damage = recoilDamage
+				})
+			else
+				table.insert(events, {
+					EventType = "RecoilNegated", Target = attacker.ID, Ability = attacker.ActiveAbility
+				})
+			end
+
+			-- B) Healing/Draining (e.g., Absorb's "HealFractionDamage")
+		elseif event.EventType == "HealIntent" and event.Action == "HealFractionDamage" then
+			local healFraction = event.Fraction
+			local healingAmount = math.max(1, math.floor(finalDamage * healFraction))
+			attacker:Heal(healingAmount) -- PSEUDO-CODE
+
+			table.insert(events, {
+				EventType = "Healing", Source = attacker.ID, Target = attacker.ID,
+				Move = moveName, Amount = healingAmount
+			})
+		end
+	end
+
+	return events
 end
 
 return MoveModule]]></ProtectedString>
