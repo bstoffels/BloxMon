@@ -1513,11 +1513,13 @@ zNLfaoZA///+//PAj5CH]]></BinaryString>
 			<Item class="ModuleScript" referent="RBXC0F9E81692BF44EC9F16AE87FD305F07">
 				<Properties>
 					<Content name="LinkedSource"><null></null></Content>
-					<ProtectedString name="Source"><![CDATA[-- CreatureData Module
--- Contains the static blueprint data for all creatures.
+					<ProtectedString name="Source"><![CDATA[-- File: ServerStorage/Modules/CreatureData.lua
+-- Contains the static blueprint data for all creatures (9 Starters).
+
 local CreatureData = {}
 
 CreatureData.BASE_DATA = {
+	-- --- 1. Fire/Dragon Line (ID 1-3) ---
 	[1] = {
 		Name = "Scaldar",
 		Type = {"Fire"},
@@ -1529,8 +1531,8 @@ CreatureData.BASE_DATA = {
 		LevelUpMoves = {
 			[1] = {"Round"}, [5] = {"Ember"}, [10] = {"Roar"}, [15] = {"DragonBreath"},
 		},
-		TutorMoves = {"", ""},
-		Description = "Scaldar is a cheerful, newly-hatched dragon whose tiny scales shimmer like glowing embers. Its basic fire power is still weak, allowing it only to spit out small sparks. It compensates with unexpected speed, nimbly running around to find its favorite warm and sunny spots. The small, stable flame on its tail serves as a gauge of its health.",
+		TutorMoves = {"QuickAttack", "IronTail", "Snarl"},
+		Description = "Scaldar is a cheerful, newly-hatched dragon whose tiny scales shimmer like glowing embers. Its basic fire power is still weak, allowing it only to spit out small sparks. It compensates with unexpected speed, nimbly running around to find its favorite warm and sunny spots. The small, stable flame on its tail serves as a gauge of its health; if the fire dims, the creature is in poor condition.",
 	},
 	[2] = {
 		Name = "Wyrmfire",
@@ -1543,8 +1545,8 @@ CreatureData.BASE_DATA = {
 		LevelUpMoves = {
 			[18] = {"Flamethrower"}, [24] = {"DragonBreath"}, [30] = {"DragonDance"},
 		},
-		TutorMoves = {"", ""},
-		Description = "Wyrmfire has entered a boisterous teenage phase. Its body has elongated, and it has developed stronger, angular scales that better protect it against heat. The flames it spits out are no longer simple sparks but volatile fireballs. Although it has gained attack power, it is often impatient and constantly tests its new strength by scorching trees and rocks.",
+		TutorMoves = {"ThunderFang", "FlareBlitz", "Will-O-Wisp"}, 
+		Description = "Wyrmfire has entered a boisterous teenage phase. Its body has elongated, and it has developed stronger, angular scales that better protect it against heat. The flames it spits out are no longer simple sparks but volatile fireballs. Although it has gained attack power, it is often impatient and constantly tests its new strength by scorching trees and rocks. It must be disciplined to control its aggressive instincts.",
 	},
 	[3] = {
 		Name = "Draconiax",
@@ -1557,8 +1559,96 @@ CreatureData.BASE_DATA = {
 		LevelUpMoves = {
 			[35] = {"Flamethrower"}, [45] = {"FireBlast"}, [60] = {"Round"},
 		},
-		TutorMoves = {"", ""},
-		Description = "Draconiax is the ultimate form of this creature, a proud and dominant dragon whose body glows with inferno-like heat. Its scales are as hard as obsidian, and its wings can create cyclones of flames. Even its defenses are unmatched. It is a master of its fire, capable of delivering both precise arson and devastating outbursts of power to defend its territory.",
+		TutorMoves = {"Outrage", "FocusBlast", "HeatWave"}, 
+		Description = "Draconiax is the ultimate form of this creature, a proud and dominant dragon whose body glows with inferno-like heat. Its scales are as hard as obsidian, and its wings can create cyclones of flames when it takes flight. It is a master of fire, capable of delivering both precise arson and devastating, large-scale outbursts of power to defend its territory from all rivals.",
+	},
+
+	-- --- 2. Grass Line (ID 4, 5, 8) ---
+	[4] = {
+		Name = "Florabot",
+		Type = {"Grass"},
+		BaseStats = {HP = 50, Attack = 45, Defense = 45, SpAtk = 40, SpDef = 40, Speed = 35},
+		Evolutions = {TargetID = 5, Method = "Level", Condition = 17}, 
+		Ability = {"Overgrow"},
+		HiddenAbility = nil,
+		BaseMoves = {},
+		LevelUpMoves = {
+			[1] = {"Tackle"}, [5] = {"VineWhip"}, [10] = {"Growth"}, [15] = {"Absorb"},
+		},
+		TutorMoves = {"LeechSeed", "SleepPowder", "Protect"},
+		Description = "Florabot is a small, mechanized seed that moves slowly but surely across the ground. It is primarily fueled by sunlight, which it converts directly into energy for movement and plant growth. It tends to spend the early morning completely immobile, absorbing the dew and preparing for the day's activities.",
+	},
+	[5] = {
+		Name = "Terraleaf",
+		Type = {"Grass", "Ground"},
+		BaseStats = {HP = 80, Attack = 70, Defense = 75, SpAtk = 65, SpDef = 70, Speed = 50},
+		Evolutions = {TargetID = 8, Method = "Level", Condition = 36}, 
+		Ability = {"Overgrow"},
+		HiddenAbility = "ThickFat",
+		BaseMoves = {"Earthquake"},
+		LevelUpMoves = {
+			[22] = {"GigaDrain"}, [30] = {"Ingrain"}, [40] = {"Synthesis"},
+		},
+		TutorMoves = {"StoneEdge", "BodyPress", "HeavySlam"}, 
+		Description = "Terraleaf is a durable automaton covered in tough, earthen armor and protective foliage. Its movements are heavy and methodical, but its defenses are impressive. It often buries itself partially in the soil to instantly replenish its energy reserves and harden its shell, making it a formidable wall against most physical attackers.",
+	},
+	[8] = {
+		Name = "Goliathroot",
+		Type = {"Grass", "Steel"},
+		BaseStats = {HP = 105, Attack = 70, Defense = 120, SpAtk = 75, SpDef = 100, Speed = 40}, 
+		Evolutions = nil,
+		Ability = {"Overgrow"},
+		HiddenAbility = "IronBarbs",
+		BaseMoves = {"HeavySlam", "GigaDrain"},
+		LevelUpMoves = {
+			[45] = {"IronDefense"}, [55] = {"PowerWhip"}, [65] = {"FrenzyPlant"},
+		},
+		TutorMoves = {"Spikes", "Curse", "Synthesis"}, 
+		Description = "Goliathroot is a massive, rooted structure, armored by layers of hardened steel-like bark. Its slow movement is offset by its colossal defensive strength and immense physical weight. It is known to stand motionless for days, serving as a landmark, only moving violently to repel creatures that attempt to feed on the resources it protects.",
+	},
+
+	-- --- 3. Water Line (ID 6, 7, 9) ---
+	[6] = {
+		Name = "Aquajoy",
+		Type = {"Water"},
+		BaseStats = {HP = 35, Attack = 40, Defense = 30, SpAtk = 55, SpDef = 40, Speed = 70},
+		Evolutions = {TargetID = 7, Method = "Level", Condition = 18}, 
+		Ability = {"Torrent"},
+		HiddenAbility = "SwiftSwim",
+		BaseMoves = {},
+		LevelUpMoves = {
+			[1] = {"Bubble"}, [5] = {"WaterGun"}, [10] = {"QuickAttack"}, [15] = {"AquaJet"},
+		},
+		TutorMoves = {"IceBeam", "Toxic", "Acrobatics"}, 
+		Description = "Aquajoy is a hyperactive aquatic creature that appears perpetually delighted. Its joy allows it to propel itself through water and air at high speed, leaving a glittering trail of mist. It tends to lose focus easily, but when a threat appears, it can focus its bursts of speed for a rapid escape or counter-attack.",
+	},
+	[7] = {
+		Name = "Nautilux",
+		Type = {"Water", "Electric"},
+		BaseStats = {HP = 75, Attack = 60, Defense = 60, SpAtk = 90, SpDef = 70, Speed = 100},
+		Evolutions = {TargetID = 9, Method = "Level", Condition = 35}, 
+		Ability = {"Torrent"},
+		HiddenAbility = "Intimidate",
+		BaseMoves = {"Thunderbolt"},
+		LevelUpMoves = {
+			[28] = {"Surf"}, [38] = {"HydroPump"}, [50] = {"Discharge"},
+		},
+		TutorMoves = {"IcePunch", "Scald", "Taunt"}, 
+		Description = "Nautilux is a swift predator of the deep that has developed the ability to generate powerful electrical currents. It uses these bursts of electricity to stun its prey before moving in for the final, decisive aquatic strike. While still fast, its electrical generation requires intense focus, making it appear more serious and methodical than its previous form.",
+	},
+	[9] = {
+		Name = "Tidalthorn",
+		Type = {"Water", "Poison"},
+		BaseStats = {HP = 80, Attack = 110, Defense = 70, SpAtk = 70, SpDef = 75, Speed = 105},
+		Evolutions = nil,
+		Ability = {"Torrent"},
+		HiddenAbility = "PoisonTouch",
+		BaseMoves = {"GunkShot", "Liquidation"},
+		LevelUpMoves = {
+			[44] = {"Toxic"}, [56] = {"PoisonJab"}, [68] = {"WaveCrash"},
+		},
+		TutorMoves = {"SwordsDance", "FlipTurn", "PoisonJab"}, 
+		Description = "Tidalthorn is a lethal aquatic beast covered in sharp, poisonous spines. It maintains its incredible speed but utilizes it to deliver debilitating status effects alongside powerful physical strikes. Its appearance alone is enough to intimidate most opponents, and the slightest contact is enough to transfer a painful, slow-acting venom.",
 	},
 }
 
@@ -1582,6 +1672,7 @@ return CreatureData]]></ProtectedString>
 local AbilityData = {}
 
 AbilityData.ABILITY_DATA = {
+	-- --- Existing Custom Abilities (ID 1-4) ---
 	["PyrePower"] = {
 		ID = 1,
 		Name = "Pyre Power",
@@ -1624,6 +1715,111 @@ AbilityData.ABILITY_DATA = {
 			{"StatChange", "SpAtk", 0.5}, -- [Action, Stat, Stages]
 		},
 	},
+
+	-- --- General Utility Abilities (ID 5-8) ---
+	["ThickFat"] = {
+		ID = 5,
+		Name = "Thick Fat",
+		Trigger = {"OnDamageReceived"},
+		Scope = "UserOnly",
+		Description = "Halves damage taken from Fire and Ice type attacks.",
+		Effect = {
+			{"TypeDefenseModify", "Fire", 0.5},  -- Defense Multiplier applied to Fire type moves
+			{"TypeDefenseModify", "Ice", 0.5},   -- Defense Multiplier applied to Ice type moves
+		},
+	},
+	["SwiftSwim"] = {
+		ID = 6,
+		Name = "Swift Swim",
+		Trigger = {"OnWeatherChange"},
+		Scope = "UserOnly",
+		Description = "Doubles the creature's Speed stat during Rain.",
+		Effect = {
+			{"ConditionStatBoost", "Rain", "Speed", 2.0}, -- [Action, Condition, Stat, Multiplier]
+		},
+	},
+	["Intimidate"] = {
+		ID = 7,
+		Name = "Intimidate",
+		Trigger = {"OnEntry"},
+		Scope = "OpponentAll",
+		Description = "Lowers the Attack stat of all opponents by one stage upon entering battle.",
+		Effect = {
+			{"StatChange", "Attack", -1}, -- Negative stage value means a debuff
+		},
+	},
+	["PoisonTouch"] = {
+		ID = 8,
+		Name = "Poison Touch",
+		Trigger = {"OnContactHit"},
+		Scope = "OpponentOnly",
+		Description = "Has a 30% chance to Poison the target when using a contact move.",
+		Effect = {
+			{"GiveStatus", "Poison", 0.30},
+		},
+	},
+
+	-- --- Starter Core Abilities (ID 9-10) ---
+	["Overgrow"] = {
+		ID = 9,
+		Name = "Overgrow",
+		Trigger = {"OnAttackExecuted", "HealthLow"}, -- Trigger only when move used AND health is low
+		Scope = "UserOnly",
+		Description = "Increases the power of Grass-type moves by 50% when HP is low (<= 33%).",
+		Effect = {
+			{"ConditionalBoostTypeDamage", "Grass", 1.50}, 
+		},
+	},
+	["Torrent"] = {
+		ID = 10,
+		Name = "Torrent",
+		Trigger = {"OnAttackExecuted", "HealthLow"},
+		Scope = "UserOnly",
+		Description = "Increases the power of Water-type moves by 50% when HP is low (<= 33%).",
+		Effect = {
+			{"ConditionalBoostTypeDamage", "Water", 1.50}, 
+		},
+	},
+	["IronBarbs"] = {
+		ID = 11,
+		Name = "Iron Barbs",
+		Trigger = {"OnContactDamageTaken"}, 
+		Scope = "OpponentOnly",
+		Description = "The attacker takes 1/8th of their Max HP as damage when they make contact.",
+		Effect = {
+			{"RecoilDamageFixed", 0.125}, -- Recoil is 1/8th (12.5%) of Attacker's Max HP
+		},
+	},
+	["RockHead"] = {
+		ID = 12,
+		Name = "Rock Head",
+		Trigger = {"OnSelfDamage"},
+		Scope = "UserOnly",
+		Description = "The creature's head is abnormally hard, allowing it to use powerful moves without suffering the usual recoil damage.",
+		Effect = {
+			{"PreventDamageType", "Recoil"}  -- Prevents damage type "Recoil"
+		},
+	},
+	["ClearBody"] = {
+		ID = 13,
+		Name = "Clear Body",
+		Trigger = {"OnOpponentStatChangeAttempt"},
+		Scope = "UserOnly",
+		Description = "The creature's body is encased in a protective aura, preventing opponents from using abilities or moves to lower its stats.",
+		Effect = {
+			{"PreventOpponentStatDrop", "All"}  -- Prevents all stat drops
+		},
+	},
+	["HyperCutter"] = {
+		ID = 14,
+		Name = "Hyper Cutter",
+		Trigger = {"OnOpponentStatChangeAttempt"},
+		Scope = "UserOnly",
+		Description = "The creature's massive claws or sharp appendages are a source of pride, and its Attack stat cannot be lowered by opponents.",
+		Effect = {
+			{"PreventOpponentStatDrop", "Attack"}  -- Prevents only Attack drops
+		},
+	},
 }
 
 return AbilityData]]></ProtectedString>
@@ -1657,7 +1853,7 @@ MoveData.MOVE_DATA = {
 		Priority = 0,
 		MakesContact = true,
 		Recoil = 0,
-		Effect = {nil},
+		Effect = {}, -- Use empty array for no effect
 		Description = "A physical charge into the target.",
 	},
 	["Round"] = {
@@ -1672,7 +1868,7 @@ MoveData.MOVE_DATA = {
 		Priority = 0,
 		MakesContact = false,
 		Recoil = 0,
-		Effect = {nil},
+		Effect = {},
 		Description = "A sound-based attack that works well in a team.",
 	},
 	["Ember"] = {
@@ -1687,7 +1883,7 @@ MoveData.MOVE_DATA = {
 		Priority = 0,
 		MakesContact = false,
 		Recoil = 0,
-		Effect = {"BurnChance"}, -- 10% chance to Burn
+		Effect = {{"GiveStatusChance", "Burn", 0.10}}, -- Standardized
 		Description = "Shoots a small flame at the foe. May cause a burn.",
 	},
 	["Flamethrower"] = {
@@ -1702,14 +1898,14 @@ MoveData.MOVE_DATA = {
 		Priority = 0,
 		MakesContact = false,
 		Recoil = 0,
-		Effect = {"BurnChance"}, -- 10% chance to Burn
+		Effect = {{"GiveStatusChance", "Burn", 0.10}},
 		Description = "Unleashes a powerful stream of fire. May cause a burn.",
 	},
 	["DragonDance"] = {
 		ID = 5,
 		Name = "Dragon Dance",
 		Type = "Dragon",
-		Category = "Buff",
+		Category = "Utility", -- Changed from Buff to the more common Utility category
 		Power = nil,
 		Accuracy = nil,
 		PP = 10,
@@ -1717,8 +1913,11 @@ MoveData.MOVE_DATA = {
 		Priority = 0,
 		MakesContact = false,
 		Recoil = 0,
-		Effect = {"SpAtkUp+", "AtkUp+"}, -- Boosts Attack and Special Attack by one stage
-		Description = "A mystical dance that raises Attack and Special Attack.",
+		Effect = {
+			{"StatChange", "Attack", 1}, -- +1 Stage
+			{"StatChange", "Speed", 1},  -- Corrected to Speed, as per standard Dragon Dance effect
+		},
+		Description = "A mystical dance that raises Attack and Speed.",
 	},
 	["FireSpurt"] = {
 		ID = 6,
@@ -1732,7 +1931,7 @@ MoveData.MOVE_DATA = {
 		Priority = 0,
 		MakesContact = false,
 		Recoil = 0,
-		Effect = {nil},
+		Effect = {},
 		Description = "Breathes a simple, short burst of fire at the target.",
 	},
 	["FireBlast"] = {
@@ -1747,7 +1946,7 @@ MoveData.MOVE_DATA = {
 		Priority = 0,
 		MakesContact = false,
 		Recoil = 0,
-		Effect = {"HeavyBurnChance"}, -- Higher chance to Burn (e.g., 30%)
+		Effect = {{"GiveStatusChance", "Burn", 0.30}}, -- Higher 30% chance
 		Description = "A massive burst of fire in the shape of a star. Has a high chance to burn.",
 	},
 	["DragonBreath"] = {
@@ -1762,7 +1961,7 @@ MoveData.MOVE_DATA = {
 		Priority = 0,
 		MakesContact = false,
 		Recoil = 0,
-		Effect = {"ParalyzeChance"}, -- 30% chance to Paralyze
+		Effect = {{"GiveStatusChance", "Paralyze", 0.30}},
 		Description = "A damaging attack using a sharp gust of foul breath. May paralyze the foe.",
 	},
 	["Roar"] = {
@@ -1774,11 +1973,639 @@ MoveData.MOVE_DATA = {
 		Accuracy = nil,
 		PP = 20,
 		Target = "AllOpponents",
-		Priority = -6, -- A negative priority ensures it goes last
+		Priority = -6, 
 		MakesContact = false,
 		Recoil = 0,
-		Effect = {"ForceSwitch"}, -- Forces the opponent to switch out
+		Effect = {{"ForceSwitch"}}, -- Forces the opponent to switch out
 		Description = "The user emits a terrifying sound, forcing the foe to flee the battle.",
+	},
+	["VineWhip"] = {
+		ID = 10,
+		Name = "Vine Whip",
+		Type = "Grass",
+		Category = "Physical",
+		Power = 45,
+		Accuracy = 100,
+		PP = 25,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {},
+		Description = "Whips the foe with thin, tough vines.",
+	},
+	["Growth"] = {
+		ID = 11,
+		Name = "Growth",
+		Type = "Normal",
+		Category = "Utility",
+		Power = nil,
+		Accuracy = nil,
+		PP = 20,
+		Target = "Self",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {
+			{"StatChange", "SpAtk", 1},
+			{"StatChange", "Attack", 1},
+		},
+		Description = "Draws power from the sun to boost the user's Attack and Sp. Atk.",
+	},
+	["Absorb"] = {
+		ID = 12,
+		Name = "Absorb",
+		Type = "Grass",
+		Category = "Special",
+		Power = 20,
+		Accuracy = 100,
+		PP = 25,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"HealFractionDamage", 0.5}}, -- Heals user for 50% of damage dealt
+		Description = "An attack that drains HP from the target. The user recovers half the HP drained.",
+	},
+	["GigaDrain"] = {
+		ID = 13,
+		Name = "Giga Drain",
+		Type = "Grass",
+		Category = "Special",
+		Power = 75,
+		Accuracy = 100,
+		PP = 10,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"HealFractionDamage", 0.5}}, 
+		Description = "A powerful draining attack. The user recovers half the HP drained.",
+	},
+	["Ingrain"] = {
+		ID = 14,
+		Name = "Ingrain",
+		Type = "Grass",
+		Category = "Utility",
+		Power = nil,
+		Accuracy = nil,
+		PP = 20,
+		Target = "Self",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"LockDown", "HealPerTurn"}}, -- Roots the user, preventing switch and healing per turn
+		Description = "The user roots itself, restoring a small amount of HP each turn.",
+	},
+	["Synthesis"] = {
+		ID = 15,
+		Name = "Synthesis",
+		Type = "Grass",
+		Category = "Heal",
+		Power = nil,
+		Accuracy = nil,
+		PP = 5,
+		Target = "Self",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"HealFractionMaxHP", 0.5}}, -- Heals a fraction of Max HP
+		Description = "Restores HP. The amount recovered varies depending on the weather.",
+	},
+	["Bubble"] = {
+		ID = 16,
+		Name = "Bubble",
+		Type = "Water",
+		Category = "Special",
+		Power = 40,
+		Accuracy = 100,
+		PP = 30,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"TargetStatChangeChance", "Speed", -1, 0.10}}, -- 10% chance to drop Speed
+		Description = "Attacks with a stream of bubbles. May lower the target's Speed.",
+	},
+	["WaterGun"] = {
+		ID = 17,
+		Name = "Water Gun",
+		Type = "Water",
+		Category = "Special",
+		Power = 40,
+		Accuracy = 100,
+		PP = 25,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {},
+		Description = "Fires a jet of water at the target.",
+	},
+	["QuickAttack"] = {
+		ID = 18,
+		Name = "Quick Attack",
+		Type = "Normal",
+		Category = "Physical",
+		Power = 40,
+		Accuracy = 100,
+		PP = 30,
+		Target = "SingleOpponent",
+		Priority = 1, -- High priority
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {},
+		Description = "The user lunges at the target at a speed that makes it almost impossible to react.",
+	},
+	["AquaJet"] = {
+		ID = 19,
+		Name = "Aqua Jet",
+		Type = "Water",
+		Category = "Physical",
+		Power = 40,
+		Accuracy = 100,
+		PP = 20,
+		Target = "SingleOpponent",
+		Priority = 1, -- High priority
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {},
+		Description = "The user lunges at the target with a high-speed jet of water.",
+	},
+	["Surf"] = {
+		ID = 20,
+		Name = "Surf",
+		Type = "Water",
+		Category = "Special",
+		Power = 90,
+		Accuracy = 100,
+		PP = 15,
+		Target = "AllOther", -- Hits all creatures except the user
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {},
+		Description = "A huge wave crashes down on the target and surrounding creatures.",
+	},
+	["Earthquake"] = {
+		ID = 21,
+		Name = "Earthquake",
+		Type = "Ground",
+		Category = "Physical",
+		Power = 100,
+		Accuracy = 100,
+		PP = 10,
+		Target = "AllOther",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {},
+		Description = "The user causes a powerful tremor, hitting everyone but the user.",
+	},
+	["IronDefense"] = {
+		ID = 22,
+		Name = "Iron Defense",
+		Type = "Steel",
+		Category = "Utility",
+		Power = nil,
+		Accuracy = nil,
+		PP = 15,
+		Target = "Self",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"StatChange", "Defense", 2}}, -- +2 Stages
+		Description = "Harden the body to sharply boost Defense.",
+	},
+	["HeavySlam"] = {
+		ID = 23,
+		Name = "Heavy Slam",
+		Type = "Steel",
+		Category = "Physical",
+		Power = 1, -- Power calculation is based on weight difference
+		Accuracy = 100,
+		PP = 10,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {{"WeightBasedDamage"}}, 
+		Description = "The user falls onto the target. Damage is based on the weight difference.",
+	},
+	["PowerWhip"] = {
+		ID = 24,
+		Name = "Power Whip",
+		Type = "Grass",
+		Category = "Physical",
+		Power = 120,
+		Accuracy = 85,
+		PP = 10,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {},
+		Description = "Whips the foe with a powerful and aggressive strike.",
+	},
+	["GunkShot"] = {
+		ID = 25,
+		Name = "Gunk Shot",
+		Type = "Poison",
+		Category = "Physical",
+		Power = 120,
+		Accuracy = 80,
+		PP = 5,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"GiveStatusChance", "Poison", 0.30}},
+		Description = "Fires a blast of filthy garbage. May Poison the foe.",
+	},
+	["Liquidation"] = {
+		ID = 26,
+		Name = "Liquidation",
+		Type = "Water",
+		Category = "Physical",
+		Power = 85,
+		Accuracy = 100,
+		PP = 10,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {{"TargetStatChangeChance", "Defense", -1, 0.20}}, -- 20% chance to drop Defense
+		Description = "Uses a torrent of water to crash into the target. May lower the target's Defense.",
+	},
+	["Discharge"] = {
+		ID = 27,
+		Name = "Discharge",
+		Type = "Electric",
+		Category = "Special",
+		Power = 80,
+		Accuracy = 100,
+		PP = 15,
+		Target = "AllOther",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"GiveStatusChance", "Paralyze", 0.30}},
+		Description = "Unleashes a large discharge of electricity. May paralyze.",
+	},
+	["IronTail"] = {
+		ID = 28,
+		Name = "Iron Tail",
+		Type = "Steel",
+		Category = "Physical",
+		Power = 100,
+		Accuracy = 75,
+		PP = 15,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {{"TargetStatChangeChance", "Defense", -1, 0.30}}, -- 30% chance to drop Defense
+		Description = "A strike with a hard tail. Low accuracy, but may lower the foe's Defense.",
+	},
+	["Snarl"] = {
+		ID = 29,
+		Name = "Snarl",
+		Type = "Dark",
+		Category = "Special",
+		Power = 55,
+		Accuracy = 95,
+		PP = 15,
+		Target = "AllOpponents",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"TargetStatChange", "SpAtk", -1}}, -- Guaranteed 1 stage Sp. Atk drop
+		Description = "The user snarled, lowering the Sp. Atk of all foes.",
+	},
+	["ThunderFang"] = {
+		ID = 30,
+		Name = "Thunder Fang",
+		Type = "Electric",
+		Category = "Physical",
+		Power = 65,
+		Accuracy = 95,
+		PP = 15,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {
+			{"GiveStatusChance", "Paralyze", 0.10}, -- 10% chance to Paralyze
+			{"FlinchChance", 0.10},                -- 10% chance to Flinch
+		},
+		Description = "Electrified fangs bite the foe. May Paralyze or cause flinching.",
+	},
+	["FlareBlitz"] = {
+		ID = 31,
+		Name = "Flare Blitz",
+		Type = "Fire",
+		Category = "Physical",
+		Power = 120,
+		Accuracy = 100,
+		PP = 15,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {
+			{"RecoilDamageFixed", 0.33},          -- User takes 1/3 recoil damage
+			{"GiveStatusChance", "Burn", 0.10},   -- 10% chance to Burn
+		},
+		Description = "Charges the foe, dealing massive damage but hurting the user. May cause a burn.",
+	},
+	["Will-O-Wisp"] = {
+		ID = 32,
+		Name = "Will-O-Wisp",
+		Type = "Fire",
+		Category = "Status",
+		Power = nil,
+		Accuracy = 85,
+		PP = 15,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"GiveStatus", "Burn", 1.0}}, -- Guaranteed Burn if it hits
+		Description = "Inflicts a crippling burn on the target.",
+	},
+	["Outrage"] = {
+		ID = 33,
+		Name = "Outrage",
+		Type = "Dragon",
+		Category = "Physical",
+		Power = 120,
+		Accuracy = 100,
+		PP = 10,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {{"LockMoveRandom"}}, -- Locks the user into the move for 2-3 turns, then confuses
+		Description = "Unleashes a rampage for 2-3 turns, then causes confusion.",
+	},
+	["FocusBlast"] = {
+		ID = 34,
+		Name = "Focus Blast",
+		Type = "Fighting",
+		Category = "Special",
+		Power = 120,
+		Accuracy = 70,
+		PP = 5,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"TargetStatChangeChance", "SpDef", -1, 0.10}},
+		Description = "A high-powered Fighting attack. Low accuracy, may lower Sp. Def.",
+	},
+	["HeatWave"] = {
+		ID = 35,
+		Name = "Heat Wave",
+		Type = "Fire",
+		Category = "Special",
+		Power = 95,
+		Accuracy = 90,
+		PP = 10,
+		Target = "AllOpponents",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"GiveStatusChance", "Burn", 0.10}},
+		Description = "The user exhales a heated breath, striking all foes. May cause a burn.",
+	},
+	["LeechSeed"] = {
+		ID = 36,
+		Name = "Leech Seed",
+		Type = "Grass",
+		Category = "Status",
+		Power = nil,
+		Accuracy = 90,
+		PP = 10,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"StatusEffect", "Seeded"}}, -- Inflicts the 'Seeded' status for HP drain/turn
+		Description = "Plants a seed that drains HP from the target each turn.",
+	},
+	["SleepPowder"] = {
+		ID = 37,
+		Name = "Sleep Powder",
+		Type = "Grass",
+		Category = "Status",
+		Power = nil,
+		Accuracy = 75,
+		PP = 15,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"GiveStatus", "Sleep", 1.0}},
+		Description = "Scatters a powder that may put the foe to sleep.",
+	},
+	["Protect"] = {
+		ID = 38,
+		Name = "Protect",
+		Type = "Normal",
+		Category = "Utility",
+		Power = nil,
+		Accuracy = nil,
+		PP = 10,
+		Target = "Self",
+		Priority = 4, -- Very high priority
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"BlockDamage", 1.0}}, -- Blocks most damage for one turn
+		Description = "The user is shielded from damage this turn, but may fail if used repeatedly.",
+	},
+	["StoneEdge"] = {
+		ID = 39,
+		Name = "Stone Edge",
+		Type = "Rock",
+		Category = "Physical",
+		Power = 100,
+		Accuracy = 80,
+		PP = 5,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"CritRateBoost", 1}}, -- High critical hit ratio
+		Description = "Sharp stones are hurled at the target. Has a high critical-hit ratio.",
+	},
+	["BodyPress"] = {
+		ID = 40,
+		Name = "Body Press",
+		Type = "Fighting",
+		Category = "Physical",
+		Power = 80,
+		Accuracy = 100,
+		PP = 10,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {{"DefenseDamageCalculation"}}, -- Uses user's Defense stat instead of Attack
+		Description = "The user smashes its body into the target. Uses the user's Defense stat for damage.",
+	},
+	["Spikes"] = {
+		ID = 41,
+		Name = "Spikes",
+		Type = "Ground",
+		Category = "Status",
+		Power = nil,
+		Accuracy = nil,
+		PP = 20,
+		Target = "OpponentField", -- Places hazards on the opponent's side
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"SetEntryHazard", "Spikes"}},
+		Description = "Scatters sharpened spikes that hurt foes switching in.",
+	},
+	["Curse"] = {
+		ID = 42,
+		Name = "Curse",
+		Type = "Ghost",
+		Category = "Status",
+		Power = nil,
+		Accuracy = nil,
+		PP = 10,
+		Target = "Self",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {
+			{"StatChange", "Attack", 1},
+			{"StatChange", "Defense", 1},
+			{"StatChange", "Speed", -1},
+		},
+		Description = "A mysterious move that boosts Attack and Defense, but lowers Speed.",
+	},
+	["IceBeam"] = {
+		ID = 43,
+		Name = "Ice Beam",
+		Type = "Ice",
+		Category = "Special",
+		Power = 90,
+		Accuracy = 100,
+		PP = 10,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"GiveStatusChance", "Freeze", 0.10}},
+		Description = "A strong beam of ice. May Freeze the foe.",
+	},
+	["Acrobatics"] = {
+		ID = 44,
+		Name = "Acrobatics",
+		Type = "Flying",
+		Category = "Physical",
+		Power = 55,
+		Accuracy = 100,
+		PP = 15,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {{"DoublePowerIfNoItem"}}, -- Doubles power if the user holds no item
+		Description = "Attacks with double power if the user is not holding an item.",
+	},
+	["IcePunch"] = {
+		ID = 45,
+		Name = "Ice Punch",
+		Type = "Ice",
+		Category = "Physical",
+		Power = 75,
+		Accuracy = 100,
+		PP = 15,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {{"GiveStatusChance", "Freeze", 0.10}},
+		Description = "A chilling punch. May Freeze the foe.",
+	},
+	["Scald"] = {
+		ID = 46,
+		Name = "Scald",
+		Type = "Water",
+		Category = "Special",
+		Power = 80,
+		Accuracy = 100,
+		PP = 15,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"GiveStatusChance", "Burn", 0.30}}, -- Unique Water move with high Burn chance
+		Description = "Blasts the foe with hot water. May cause a Burn, even to Water types.",
+	},
+	["Taunt"] = {
+		ID = 47,
+		Name = "Taunt",
+		Type = "Dark",
+		Category = "Status",
+		Power = nil,
+		Accuracy = 100,
+		PP = 20,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"StatusEffect", "Taunt"}}, -- Prevents the target from using Status moves
+		Description = "The target is forced to use only damaging moves for three turns.",
+	},
+	["SwordsDance"] = {
+		ID = 48,
+		Name = "Swords Dance",
+		Type = "Normal",
+		Category = "Utility",
+		Power = nil,
+		Accuracy = nil,
+		PP = 20,
+		Target = "Self",
+		Priority = 0,
+		MakesContact = false,
+		Recoil = 0,
+		Effect = {{"StatChange", "Attack", 2}}, -- +2 Stages
+		Description = "A mystical dance that sharply boosts the user's Attack stat.",
+	},
+	["FlipTurn"] = {
+		ID = 49,
+		Name = "Flip Turn",
+		Type = "Water",
+		Category = "Physical",
+		Power = 60,
+		Accuracy = 100,
+		PP = 20,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {{"SwitchOut"}}, -- Switches the user out after dealing damage
+		Description = "Deals damage and then the user switches out, making it an excellent pivot move.",
+	},
+	["PoisonJab"] = {
+		ID = 50,
+		Name = "Poison Jab",
+		Type = "Poison",
+		Category = "Physical",
+		Power = 80,
+		Accuracy = 100,
+		PP = 20,
+		Target = "SingleOpponent",
+		Priority = 0,
+		MakesContact = true,
+		Recoil = 0,
+		Effect = {{"GiveStatusChance", "Poison", 0.30}},
+		Description = "Stabs the target with a toxic spike. May Poison the foe.",
 	},
 }
 
@@ -2063,85 +2890,129 @@ return MoveModule]]></ProtectedString>
 					<ProtectedString name="Source"><![CDATA[-- File: ServerStorage/Modules/AbilityModule.lua
 
 local ServerStorage = script.Parent.Parent
--- Assuming CreatureData and MoveData are also in the Data folder
 local AbilityData = require(ServerStorage.Data.AbilityData)
-local MoveData = require(ServerStorage.Data.MoveData) -- Needed to check move properties
+local MoveData = require(ServerStorage.Data.MoveData)
 
 local AbilityModule = {}
 AbilityModule.ABILITY_DATA = AbilityData.ABILITY_DATA
 
 -- Helper function that executes a list of effects on a target
-local function executeEffects(targetCreature: table, effectList: table)
+-- RETURNS: table of structured combat log events.
+local function executeEffects(abilityName: string, userCreature: table, targetCreature: table, effectList: table): table
+	local events = {} 
+
 	for _, effectAction in ipairs(effectList) do
-		local actionType = effectAction[1] -- e.g., "StatChange", "RecoilDamage"
+		local actionType = effectAction[1]
 
 		if actionType == "StatChange" then
-			-- [Action, Stat, Stages] -> ["StatChange", "Speed", 1]
 			local statName = effectAction[2]
 			local stages = effectAction[3]
 
-			-- PSEUDO-CODE: Implement this in your creature instance class
-			targetCreature:ApplyStatBoost(statName, stages)
-			print(targetCreature.Name .. " stat changed: " .. statName .. " by " .. stages .. " stages.")
+			targetCreature:ApplyStatBoost(statName, stages) -- PSEUDO-CODE: Execute logic
 
-		elseif actionType == "RecoilDamage" then
-			-- [Action, Value] -> ["RecoilDamage", 0.125]
+			table.insert(events, {
+				EventType = "StatChange", Source = userCreature.ID, Target = targetCreature.ID,
+				Ability = abilityName, Stat = statName, Stages = stages, Success = true
+			})
+
+		elseif actionType == "RecoilDamage" or actionType == "RecoilDamageFixed" then
 			local multiplier = effectAction[2]
-			local damageToDeal = targetCreature.LastDamageTaken * multiplier -- Assumes instance stores last hit damage
 
-			-- PSEUDO-CODE: Implement this in your battle system
-			targetCreature:DealRecoilDamage(damageToDeal)
-			print(targetCreature.Name .. " took recoil damage.")
+			table.insert(events, {
+				EventType = "DamageIntent", Source = targetCreature.ID, Target = userCreature.ID,
+				Ability = abilityName, DamageType = "Recoil", RecoilMultiplier = multiplier,
+				Success = true
+			})
+
+		elseif actionType == "HealFractionMaxHP" then
+			local fraction = effectAction[2]
+			local healingAmount = targetCreature.MaxHP * fraction 
+			targetCreature:Heal(healingAmount) -- PSEUDO-CODE
+
+			table.insert(events, {
+				EventType = "Healing", Source = userCreature.ID, Target = targetCreature.ID,
+				Ability = abilityName, Amount = healingAmount
+			})
 
 		elseif actionType == "GiveStatus" then
-			-- [Action, Status, Chance] -> ["GiveStatus", "Burn", 0.10]
 			local status = effectAction[2]
 			local chance = effectAction[3]
 
-			if math.random() <= chance then
-				-- PSEUDO-CODE: Implement this in your battle system
-				targetCreature:ApplyStatusEffect(status)
-				print(targetCreature.Name .. " applied status: " .. status)
-			end
+			local success = targetCreature:AttemptApplyStatusEffect(status, chance) -- PSEUDO-CODE
+
+			table.insert(events, {
+				EventType = "StatusAttempt", Source = userCreature.ID, Target = targetCreature.ID,
+				Ability = abilityName, Status = status, Chance = chance, Success = success,
+			})
 		end
-		-- Add logic for BoostTypeDamage, etc., here...
 	end
+	return events
 end
 
--- --- PUBLIC FUNCTIONS ---
+-- --- PUBLIC HANDLERS ---
 
--- Retrieves the static data for a given ability name.
 function AbilityModule.getAbilityData(abilityName: string): table
 	return AbilityModule.ABILITY_DATA[abilityName]
 end
 
--- 1. On Entry Handler (for Dragon Surge)
--- Called by the battle system when any creature enters the field.
-function AbilityModule.handleOnEntry(user: table)
+-- 1. On Entry Handler (e.g., Intimidate, Dragon Surge)
+-- RETURNS: table of events (ability activation, stat changes).
+function AbilityModule.handleOnEntry(user: table, allOpponents: table): table
+	local collectedEvents = {}
 	local abilityName = user.ActiveAbility or user.HiddenAbility
-	if not abilityName then return end
+	if not abilityName then return collectedEvents end
 
 	local abilityData = AbilityModule.getAbilityData(abilityName)
 
-	if abilityData and abilityData.Trigger and table.find(abilityData.Trigger, "OnEntry") then
-		executeEffects(user, abilityData.Effect)
+	if abilityData and table.find(abilityData.Trigger, "OnEntry") then
+		local abilityDisplayName = abilityData.Name
+		local scope = abilityData.Scope
+
+		table.insert(collectedEvents, {
+			EventType = "AbilityActivate", Source = user.ID, Ability = abilityDisplayName,
+			Message = string.format("%s's %s activated!", user.Name, abilityDisplayName) 
+		})
+
+		if scope == "UserOnly" then
+			local effectEvents = executeEffects(abilityDisplayName, user, user, abilityData.Effect)
+			for _, event in ipairs(effectEvents) do table.insert(collectedEvents, event) end
+		elseif scope == "OpponentAll" then
+			for _, opponent in ipairs(allOpponents) do
+				local effectEvents = executeEffects(abilityDisplayName, user, opponent, abilityData.Effect)
+				for _, event in ipairs(effectEvents) do table.insert(collectedEvents, event) end
+			end
+		end
 	end
+	return collectedEvents
 end
 
--- 2. Pre-Damage Calculation Handler (for Pyre Power)
--- Called by the battle system before applying damage, used to modify the final power/multiplier.
+-- 2. Pre-Damage Calculation Handler (e.g., Pyre Power, Overgrow)
+-- RETURNS: number (damage multiplier).
 function AbilityModule.calculateDamageMultiplier(user: table, move: table): number
 	local multiplier = 1.0
-	local abilityName = user.ActiveAbility -- Only checking active ability here
+	local abilityName = user.ActiveAbility
 	if not abilityName then return multiplier end
 
 	local abilityData = AbilityModule.getAbilityData(abilityName)
 
+	-- Passive Type Boosts (e.g., Pyre Power)
 	if abilityData and table.find(abilityData.Trigger, "OnAttackExecuted") then
 		for _, effectAction in ipairs(abilityData.Effect) do
 			if effectAction[1] == "BoostTypeDamage" and effectAction[2] == move.Type then
-				-- [Action, Type, Multiplier] -> ["BoostTypeDamage", "Fire", 1.20]
 				multiplier = multiplier * effectAction[3]
+			end
+		end
+	end
+
+	-- Conditional HP Boosts (e.g., Overgrow, Torrent)
+	if abilityData and table.find(abilityData.Trigger, "HealthLow") then
+		local userHPPercent = user.CurrentHP / user.MaxHP -- PSEUDO-CODE
+
+		if userHPPercent <= 0.33 then
+			for _, effectAction in ipairs(abilityData.Effect) do
+				if effectAction[1] == "ConditionalBoostTypeDamage" and effectAction[2] == move.Type then
+					multiplier = multiplier * effectAction[3]
+				end
 			end
 		end
 	end
@@ -2149,25 +3020,47 @@ function AbilityModule.calculateDamageMultiplier(user: table, move: table): numb
 	return multiplier
 end
 
--- 3. Post-Damage Handler (for Molten Scales)
--- Called by the battle system AFTER a physical hit is confirmed.
-function AbilityModule.handleOnHit(attacker: table, victim: table, moveCategory: string)
-	if moveCategory ~= "Physical" then return end -- Molten Scales only triggers on Physical moves
+-- 3. Post-Damage Handler (e.g., Molten Scales, Poison Touch)
+-- RETURNS: table of events (recoil, status attempts).
+function AbilityModule.handlePostDamageEffects(attacker: table, victim: table, move: table, isContact: boolean): table
+	local collectedEvents = {}
+	local victimAbility = victim.ActiveAbility or victim.HiddenAbility
+	local attackerAbility = attacker.ActiveAbility or attacker.HiddenAbility 
 
-	local abilityName = victim.ActiveAbility -- Check the victim's ability
-	if not abilityName then return end
+	-- Victim's damage taken effects (Recoil, Status on hit)
+	if victimAbility then
+		local vAbilityData = AbilityModule.getAbilityData(victimAbility)
+		local vAbilityName = vAbilityData.Name
 
-	local abilityData = AbilityModule.getAbilityData(abilityName)
+		if (move.Category == "Physical" and table.find(vAbilityData.Trigger, "OnPhysicalDamageTaken")) or
+			(isContact and table.find(vAbilityData.Trigger, "OnContactDamageTaken")) then
 
-	if abilityData and table.find(abilityData.Trigger, "OnPhysicalDamageTaken") then
-		-- Execute the effects, applying them to the ATTACKER (as they are recoil/status)
-		executeEffects(attacker, abilityData.Effect) 
+			table.insert(collectedEvents, {EventType = "AbilityActivate", Source = victim.ID, Ability = vAbilityName})
+			local effectEvents = executeEffects(vAbilityName, victim, attacker, vAbilityData.Effect)
+			for _, event in ipairs(effectEvents) do table.insert(collectedEvents, event) end
+		end
 	end
+
+	-- Attacker's contact effects (Status on hit)
+	if attackerAbility and isContact then
+		local aAbilityData = AbilityModule.getAbilityData(attackerAbility)
+		local aAbilityName = aAbilityData.Name
+
+		if table.find(aAbilityData.Trigger, "OnContactHit") then
+			table.insert(collectedEvents, {EventType = "AbilityActivate", Source = attacker.ID, Ability = aAbilityName})
+			local effectEvents = executeEffects(aAbilityName, attacker, victim, aAbilityData.Effect)
+			for _, event in ipairs(effectEvents) do table.insert(collectedEvents, event) end
+		end
+	end
+	return collectedEvents
 end
 
--- 4. Global Move Used Handler (for Wyrm Resonance)
--- Called by the battle system every time *any* creature uses a move.
-function AbilityModule.handleOnMoveUsed(moveUser: table, moveName: string, activeCreaturesInBattle)
+
+-- 4. Global Move Used Handler (e.g., Wyrm Resonance)
+-- RETURNS: table of events (stat boosts).
+function AbilityModule.handleOnMoveUsed(moveUser: table, moveName: string, activeCreaturesInBattle): table
+	local collectedEvents = {}
+
 	for _, creature in ipairs(activeCreaturesInBattle) do
 		local abilityName = creature.ActiveAbility or creature.HiddenAbility
 		if not abilityName then continue end
@@ -2177,14 +3070,138 @@ function AbilityModule.handleOnMoveUsed(moveUser: table, moveName: string, activ
 		if abilityData and table.find(abilityData.Trigger, "OnMoveUsedGlobal") then
 			local conditionMove = abilityData.Trigger[2]
 
-			-- Check the specific condition: does the used move match the required move?
 			if conditionMove and moveName == conditionMove then
+				table.insert(collectedEvents, {EventType = "AbilityActivate", Source = creature.ID, Ability = abilityData.Name})
 
-				-- Execute the Wyrm Resonance effects on the creature (self-boost)
-				executeEffects(creature, abilityData.Effect)
+				local effectEvents = executeEffects(abilityData.Name, creature, creature, abilityData.Effect)
+				for _, event in ipairs(effectEvents) do table.insert(collectedEvents, event) end
 			end
 		end
 	end
+	return collectedEvents
+end
+
+---📦 Interception and Future Handlers
+
+-- 5. Status Immunity Check (e.g., Immunity, Water Veil)
+-- Called BEFORE applying status. RETURNS: boolean (true if immune).
+function AbilityModule.checkStatusImmunity(target: table, statusType: string): boolean
+	local abilityName = target.ActiveAbility or target.HiddenAbility
+	if not abilityName then return false end 
+	-- FUTURE LOGIC: Check AbilityData for statuses the target is immune to.
+	return false 
+end
+
+-- 6. End-of-Turn Handler (e.g., Passive Healing)
+-- Called at the end of every turn. RETURNS: table of events (healing, damage).
+function AbilityModule.handleEndOfTurn(creature: table): table
+	local collectedEvents = {}
+	local abilityName = creature.ActiveAbility or creature.HiddenAbility
+	if not abilityName then return collectedEvents end
+
+	local abilityData = AbilityModule.getAbilityData(abilityName)
+
+	if abilityData and table.find(abilityData.Trigger, "EndOfTurn") then
+		local abilityDisplayName = abilityData.Name
+
+		table.insert(collectedEvents, {EventType = "AbilityActivate", Source = creature.ID, Ability = abilityDisplayName})
+
+		local effectEvents = executeEffects(abilityDisplayName, creature, creature, abilityData.Effect)
+		for _, event in ipairs(effectEvents) do table.insert(collectedEvents, event) end
+	end
+	return collectedEvents
+end
+
+-- 7. Damage Prevention Handler (e.g., Rock Head)
+-- Called BEFORE applying self-inflicted damage (recoil, crash). RETURNS: boolean (true if damage is prevented).
+function AbilityModule.checkDamagePrevention(user: table, damageType: string): boolean
+	local abilityName = user.ActiveAbility or user.HiddenAbility
+	if not abilityName then return false end
+
+	local abilityData = AbilityModule.getAbilityData(abilityName)
+
+	if abilityData and table.find(abilityData.Trigger, "OnSelfDamage") then
+		for _, effectAction in ipairs(abilityData.Effect) do
+			-- Checks for structure: ["PreventDamageType", "Recoil"]
+			if effectAction[1] == "PreventDamageType" and effectAction[2] == damageType then
+				return true -- Prevention successful
+			end
+		end
+	end
+	return false
+end
+
+-- 8. Stat Change Interception Handler (e.g., Clear Body, Inner Focus)
+-- Called by the target's instance BEFORE applying a stat change. RETURNS: boolean (true if stat change is prevented).
+function AbilityModule.checkStatChangeInterception(target: table, statName: string, stages: number, sourceIsOpponent: boolean): boolean
+	local abilityName = target.ActiveAbility or target.HiddenAbility
+	if not abilityName then return false end
+
+	-- Only check for negation if the stat is dropping and the source is external
+	if stages >= 0 or not sourceIsOpponent then 
+		return false 
+	end
+
+	local abilityData = AbilityModule.getAbilityData(abilityName)
+
+	if abilityData and table.find(abilityData.Trigger, "OnOpponentStatChangeAttempt") then
+		for _, effectAction in ipairs(abilityData.Effect) do
+			-- Checks for structure: ["PreventOpponentStatDrop", "Attack"] or ["PreventOpponentStatDrop", "All"]
+			local actionType = effectAction[1]
+			local targetStat = effectAction[2]
+
+			if actionType == "PreventOpponentStatDrop" then
+				-- Check if the ability prevents this specific stat drop (e.g., "All" or "Attack")
+				if targetStat == "All" or targetStat == statName then
+					return true -- Prevention successful, stat change is negated
+				end
+			end
+		end
+	end
+	return false 
+end
+
+
+---🔢 Passive Modification Handlers (Numeric Returns)
+
+-- 9. Type Defense Modification Handler (e.g., Thick Fat)
+-- RETURNS: number (multiplies type effectiveness).
+function AbilityModule.getTypeDefenseMultiplier(defender: table, moveType: string): number
+	local multiplier = 1.0
+	local abilityName = defender.ActiveAbility or defender.HiddenAbility
+	if not abilityName then return multiplier end
+
+	local abilityData = AbilityModule.getAbilityData(abilityName)
+
+	if abilityData and table.find(abilityData.Trigger, "OnDamageReceived") then
+		for _, effectAction in ipairs(abilityData.Effect) do
+			if effectAction[1] == "TypeDefenseModify" and effectAction[2] == moveType then
+				multiplier = multiplier * effectAction[3]
+			end
+		end
+	end
+	return multiplier
+end
+
+-- 10. Environment/Weather Stat Check Handler (e.g., Swift Swim)
+-- RETURNS: number (multiplies stat value, e.g., Speed * 2.0).
+function AbilityModule.getStatCheckMultiplier(user: table, statName: string, environmentCondition: string): number
+	local multiplier = 1.0
+	local abilityName = user.ActiveAbility or user.HiddenAbility
+	if not abilityName then return multiplier end
+
+	local abilityData = AbilityModule.getAbilityData(abilityName)
+
+	if abilityData and table.find(abilityData.Trigger, "OnWeatherChange") then
+		for _, effectAction in ipairs(abilityData.Effect) do
+			local action, requiredCondition, requiredStat, boost = unpack(effectAction)
+
+			if action == "ConditionStatBoost" and requiredStat == statName and requiredCondition == environmentCondition then
+				multiplier = multiplier * boost
+			end
+		end
+	end
+	return multiplier
 end
 
 return AbilityModule]]></ProtectedString>
